@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/myrelay/!svn/ver/7/trunk/oplib/src
+END
+common.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/myrelay/!svn/ver/2/trunk/oplib/src/common.c
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/myrelay/!svn/ver/2/trunk/oplib/src/Makefile
+END
+handler.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/myrelay/!svn/ver/2/trunk/oplib/src/handler.c
+END
+sock.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/myrelay/!svn/ver/5/trunk/oplib/src/sock.c
+END
+timer.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/myrelay/!svn/ver/2/trunk/oplib/src/timer.c
+END
+log.c
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/myrelay/!svn/ver/7/trunk/oplib/src/log.c
+END
+dict.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/myrelay/!svn/ver/2/trunk/oplib/src/dict.c
+END
+genpool.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/myrelay/!svn/ver/2/trunk/oplib/src/genpool.c
+END
+hash.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/myrelay/!svn/ver/2/trunk/oplib/src/hash.c
+END
+conf.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/myrelay/!svn/ver/5/trunk/oplib/src/conf.c
+END
+iprange.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/myrelay/!svn/ver/5/trunk/oplib/src/iprange.c
+END
+md5.c
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/myrelay/!svn/ver/2/trunk/oplib/src/md5.c
+END
