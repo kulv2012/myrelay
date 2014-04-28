@@ -175,9 +175,16 @@ enum enum_server_command
   If any of the optional flags is supported by the build it will be switched
   on before sending to the client during the connection handshake.
 */
-#define CLIENT_BASIC_FLAGS (((CLIENT_ALL_FLAGS & ~CLIENT_SSL) \
+#define CLIENT_BASIC_FLAGS ((((((((CLIENT_ALL_FLAGS & ~CLIENT_SSL) \
                                                & ~CLIENT_COMPRESS) \
-                                               & ~CLIENT_SSL_VERIFY_SERVER_CERT)
+                                               & ~CLIENT_SSL_VERIFY_SERVER_CERT)\
+												& ~CLIENT_LOCAL_FILES)\
+												& ~CLIENT_IGNORE_SPACE)\
+												& ~CLIENT_IGNORE_SIGPIPE)\
+												& ~CLIENT_RESERVED)\
+												& ~CLIENT_CONNECT_WITH_DB)\
+
+//上面从第四个开始，是我加的
 
 #define SERVER_STATUS_IN_TRANS     1	/* Transaction has started */
 #define SERVER_STATUS_AUTOCOMMIT   2	/* Server in auto_commit mode */

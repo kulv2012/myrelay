@@ -2,8 +2,14 @@ CC = gcc
 CFLAGS = -I ../include/ -g -fPIC
 OBJECT = common.o conf.o dict.o genpool.o handler.o hash.o iprange.o log.o md5.o sock.o timer.o
 
+all: libop.so libop.a
+
+
 libop.so	:	$(OBJECT)
 	gcc -o libop.so -shared -fPIC $(OBJECT)
+
+libop.a	:	$(OBJECT)
+	ar rcs libop.a $(OBJECT)
 
 common.o	:	common.c ../include/common.h
 	gcc -c common.c $(CFLAGS)

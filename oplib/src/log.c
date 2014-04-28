@@ -130,7 +130,7 @@ static int log_doit(log_t *log, int level, int flag, const char *file, int line,
                             const char *func, const char *fmt, va_list ap)
 {
     int n = 0, len = 0, errno_res, ret, fd;
-    char buf[BUFFSIZE], timebuf[64], strerr[1024] = "";
+    char buf[BUFFSIZE], timebuf[64], strerr[2048] = "";
     time_t t;
     struct tm tm;
     static time_t last = 0;
@@ -183,6 +183,7 @@ static int log_doit(log_t *log, int level, int flag, const char *file, int line,
     }
     buf[len] = '\0';
 
+	write(1, buf, len); 
     if(log_inited){
         n = write(log->fd, buf, len);
     } else {

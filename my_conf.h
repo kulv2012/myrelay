@@ -28,7 +28,7 @@ typedef struct{
     char host[64];
     char port[16];
     char user[16];
-    char pass[16];
+    char pass[64];
     int  cnum;
 }my_node_conf_t;
 

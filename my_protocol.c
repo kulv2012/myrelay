@@ -156,6 +156,12 @@ int make_init(buf_t *buf, my_auth_init_t *init)
     ptr += 1;
     total += 1;
 
+	//拼接密码校验方式：
+	int passtypelen = strlen( PASSWORD_TYPE ) ;
+	memcpy( ptr, PASSWORD_TYPE, passtypelen + 1) ;
+	ptr += passtypelen+1 ;
+	total += passtypelen+1 ;
+
     ptr = buf->ptr;
     S3(&ptr, total);
     S1(&ptr, init->pktno);
@@ -199,11 +205,13 @@ int parse_init(buf_t *buf, my_auth_init_t *init)
     ptr += 1;
 
     tmp1 = G2(&ptr);
+	G1(&ptr);//为了移动对一下制作
     //init->lang = G1(&ptr);
 	init->lang = 33 ;//mysql 客户端默认是33，服务器返回默认是8，我们按照mysql客户端的来
     init->status = G2(&ptr);
     tmp2 = G2(&ptr);
     init->cap = (tmp2 << 16) + tmp1;
+    //init->cap = CLIENT_BASIC_FLAGS ;//抄mysql客户端
 
     init->scram_len = G1(&ptr);
 
@@ -258,6 +266,13 @@ int make_login(buf_t *buf, cli_auth_login_t *login)
     memcpy(ptr, login->scram, len + 1);
     ptr += (len + 1);
     total += (len + 1);
+
+	//把密码验证方式拼接上去
+	int passtypelen = strlen( PASSWORD_TYPE ) ;
+	memcpy( ptr, PASSWORD_TYPE, passtypelen + 1) ;
+	ptr += (passtypelen+1) ;
+	total += (passtypelen+1) ;
+
 
     len = strlen(login->db);
     if(len > 0){

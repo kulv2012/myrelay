@@ -52,7 +52,8 @@ static int my_ping_resp_cb(int fd, void *arg);
 static int cli_hs_auth_fail_cb(int fd, void *arg);
 
 static uint32_t cap_umask = CLIENT_FOUND_ROWS | CLIENT_NO_SCHEMA | \
-                            CLIENT_ODBC | CLIENT_COMPRESS;
+                            CLIENT_ODBC | CLIENT_COMPRESS | CLIENT_SSL_VERIFY_SERVER_CERT | CLIENT_LOCAL_FILES | \
+							CLIENT_IGNORE_SPACE | CLIENT_IGNORE_SIGPIPE | CLIENT_RESERVED | CLIENT_CONNECT_WITH_DB ;
 
 /*
  * fun: mysql handshake stage1 callback
@@ -115,12 +116,13 @@ int my_hs_stage1_cb(int fd, void *arg)
             debug(g_log, "parse init packet success\n");
         }
 
-        memcpy(message, init.scram, 8);
+		memcpy(message, init.scram, 8);
         memcpy(message + 8, init.plug, 12);
-        message[20] = '\0';
+        //memcpy(message, "%@R[SoWC", 8);
+        //memcpy(message + 8, "+L|LG_+R={tV", 12);
+        message[8+12] = '\0';
 
-        my_info_set(init.prot_ver, init.lang, init.status, \
-                        init.cap, init.srv_ver, strlen(init.srv_ver));
+        my_info_set(init.prot_ver, init.lang, init.status, init.cap, init.srv_ver, strlen(init.srv_ver));
 
         login.pktno = 1;
         login.client_flags = init.cap & (~cap_umask);
@@ -258,7 +260,7 @@ int my_hs_stage3_cb(int fd, void *arg)
             debug(g_log, "mysql authorized success\n");
             res = my_conn_set_avail(my);
         } else {
-            log(g_log, "mysql authorized error, %s\n", result.errmsg);
+            log(g_log, "mysql authorized error, errmsg:[%s]\n", result.errmsg);
             goto end;
         }
     }
@@ -313,10 +315,10 @@ int cli_hs_stage1_prepare(conn_t *c)
     init.tid = c->connid;
     memcpy(init.scram, cli->scram, 8);
     init.cap = info->cap;
-    init.lang = info->lang;
+    init.lang = 8;//info->lang;
     init.status = info->status;
-    init.scram_len = 0;
     strncpy(init.plug, cli->scram + 8, 12);
+    init.scram_len = 21;
     init.plug[12] = '\0';
 
     if( (res = make_init(buf, &init)) < 0 ){

@@ -27,6 +27,7 @@ typedef struct{
     char user[128];
     char scram[128];
     char db[128];
+    char passtype[128];
 }cli_auth_login_t;
 
 typedef struct{
@@ -66,5 +67,7 @@ int parse_init(buf_t *buf, my_auth_init_t *init);
 int parse_login(buf_t *buf, cli_auth_login_t *login);
 int parse_auth_result(buf_t *buf, my_auth_result_t *result);
 int parse_com(buf_t *buf, cli_com_t *com);
+
+#define PASSWORD_TYPE "mysql_native_password"
 
 #endif

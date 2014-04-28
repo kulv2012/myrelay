@@ -193,8 +193,7 @@ int mysql_sha1_input(SHA1_CONTEXT *context, const uint8_t *message_array,
 
   while (length--)
   {
-    context->Message_Block[context->Message_Block_Index++]=
-      (*message_array & 0xFF);
+    context->Message_Block[context->Message_Block_Index++] = (*message_array & 0xFF);
     context->Length  += 8;  /* Length is in bits */
 
 #ifndef DBUG_OFF

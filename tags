@@ -14,8 +14,8 @@ BLOB_FLAG	mysql_com.h	86;"	d
 BUFFSIZE	oplib/src/log.c	21;"	d	file:
 CC	Makefile	/^CC = gcc$/;"	m
 CC	oplib/src/Makefile	/^CC = gcc$/;"	m
-CFLAGS	Makefile	/^CFLAGS = -O2 -I \/home\/xiaoshi.xjl\/myrelay\/trunk\/oplib\/include\/$/;"	m
-CFLAGS	oplib/src/Makefile	/^CFLAGS = -I ..\/include\/ -O2 -fPIC$/;"	m
+CFLAGS	Makefile	/^CFLAGS = -g -I .\/oplib\/include\/$/;"	m
+CFLAGS	oplib/src/Makefile	/^CFLAGS = -I ..\/include\/ -g -fPIC$/;"	m
 CLIENT_ALL_FLAGS	mysql_com.h	152;"	d
 CLIENT_BASIC_FLAGS	mysql_com.h	178;"	d
 CLIENT_COMPRESS	mysql_com.h	134;"	d
@@ -27,7 +27,7 @@ CLIENT_INTERACTIVE	mysql_com.h	139;"	d
 CLIENT_LOCAL_FILES	mysql_com.h	136;"	d
 CLIENT_LONG_FLAG	mysql_com.h	131;"	d
 CLIENT_LONG_PASSWORD	mysql_com.h	129;"	d
-CLIENT_MULTI_QUERIES	mysql_com.h	264;"	d
+CLIENT_MULTI_QUERIES	mysql_com.h	271;"	d
 CLIENT_MULTI_RESULTS	mysql_com.h	146;"	d
 CLIENT_MULTI_STATEMENTS	mysql_com.h	145;"	d
 CLIENT_NO_SCHEMA	mysql_com.h	133;"	d
@@ -39,7 +39,7 @@ CLIENT_SECURE_CONNECTION	mysql_com.h	144;"	d
 CLIENT_SSL	mysql_com.h	140;"	d
 CLIENT_SSL_VERIFY_SERVER_CERT	mysql_com.h	148;"	d
 CLIENT_TRANSACTIONS	mysql_com.h	142;"	d
-CLI_COM_IGNORE_OK_PKT_SIZE	my_ops.c	1072;"	d	file:
+CLI_COM_IGNORE_OK_PKT_SIZE	my_ops.c	1078;"	d	file:
 COM_BINLOG_DUMP	mysql_com.h	/^  COM_TIME, COM_DELAYED_INSERT, COM_CHANGE_USER, COM_BINLOG_DUMP,$/;"	e	enum:enum_server_command
 COM_CHANGE_USER	mysql_com.h	/^  COM_TIME, COM_DELAYED_INSERT, COM_CHANGE_USER, COM_BINLOG_DUMP,$/;"	e	enum:enum_server_command
 COM_CONNECT	mysql_com.h	/^  COM_PROCESS_INFO, COM_CONNECT, COM_PROCESS_KILL, COM_DEBUG, COM_PING,$/;"	e	enum:enum_server_command
@@ -85,34 +85,34 @@ FF	oplib/src/md5.c	53;"	d	file:
 FIELD_IN_ADD_INDEX	mysql_com.h	105;"	d
 FIELD_IN_PART_FUNC_FLAG	mysql_com.h	104;"	d
 FIELD_IS_RENAMED	mysql_com.h	106;"	d
-FIELD_TYPE_BIT	mysql_com.h	292;"	d
-FIELD_TYPE_BLOB	mysql_com.h	286;"	d
-FIELD_TYPE_CHAR	mysql_com.h	289;"	d
-FIELD_TYPE_DATE	mysql_com.h	276;"	d
-FIELD_TYPE_DATETIME	mysql_com.h	278;"	d
-FIELD_TYPE_DECIMAL	mysql_com.h	265;"	d
-FIELD_TYPE_DOUBLE	mysql_com.h	271;"	d
-FIELD_TYPE_ENUM	mysql_com.h	281;"	d
-FIELD_TYPE_FLOAT	mysql_com.h	270;"	d
-FIELD_TYPE_GEOMETRY	mysql_com.h	291;"	d
-FIELD_TYPE_INT24	mysql_com.h	275;"	d
-FIELD_TYPE_INTERVAL	mysql_com.h	290;"	d
-FIELD_TYPE_LONG	mysql_com.h	269;"	d
-FIELD_TYPE_LONGLONG	mysql_com.h	274;"	d
-FIELD_TYPE_LONG_BLOB	mysql_com.h	285;"	d
-FIELD_TYPE_MEDIUM_BLOB	mysql_com.h	284;"	d
-FIELD_TYPE_NEWDATE	mysql_com.h	280;"	d
-FIELD_TYPE_NEWDECIMAL	mysql_com.h	266;"	d
-FIELD_TYPE_NULL	mysql_com.h	272;"	d
-FIELD_TYPE_SET	mysql_com.h	282;"	d
-FIELD_TYPE_SHORT	mysql_com.h	268;"	d
-FIELD_TYPE_STRING	mysql_com.h	288;"	d
-FIELD_TYPE_TIME	mysql_com.h	277;"	d
-FIELD_TYPE_TIMESTAMP	mysql_com.h	273;"	d
-FIELD_TYPE_TINY	mysql_com.h	267;"	d
-FIELD_TYPE_TINY_BLOB	mysql_com.h	283;"	d
-FIELD_TYPE_VAR_STRING	mysql_com.h	287;"	d
-FIELD_TYPE_YEAR	mysql_com.h	279;"	d
+FIELD_TYPE_BIT	mysql_com.h	299;"	d
+FIELD_TYPE_BLOB	mysql_com.h	293;"	d
+FIELD_TYPE_CHAR	mysql_com.h	296;"	d
+FIELD_TYPE_DATE	mysql_com.h	283;"	d
+FIELD_TYPE_DATETIME	mysql_com.h	285;"	d
+FIELD_TYPE_DECIMAL	mysql_com.h	272;"	d
+FIELD_TYPE_DOUBLE	mysql_com.h	278;"	d
+FIELD_TYPE_ENUM	mysql_com.h	288;"	d
+FIELD_TYPE_FLOAT	mysql_com.h	277;"	d
+FIELD_TYPE_GEOMETRY	mysql_com.h	298;"	d
+FIELD_TYPE_INT24	mysql_com.h	282;"	d
+FIELD_TYPE_INTERVAL	mysql_com.h	297;"	d
+FIELD_TYPE_LONG	mysql_com.h	276;"	d
+FIELD_TYPE_LONGLONG	mysql_com.h	281;"	d
+FIELD_TYPE_LONG_BLOB	mysql_com.h	292;"	d
+FIELD_TYPE_MEDIUM_BLOB	mysql_com.h	291;"	d
+FIELD_TYPE_NEWDATE	mysql_com.h	287;"	d
+FIELD_TYPE_NEWDECIMAL	mysql_com.h	273;"	d
+FIELD_TYPE_NULL	mysql_com.h	279;"	d
+FIELD_TYPE_SET	mysql_com.h	289;"	d
+FIELD_TYPE_SHORT	mysql_com.h	275;"	d
+FIELD_TYPE_STRING	mysql_com.h	295;"	d
+FIELD_TYPE_TIME	mysql_com.h	284;"	d
+FIELD_TYPE_TIMESTAMP	mysql_com.h	280;"	d
+FIELD_TYPE_TINY	mysql_com.h	274;"	d
+FIELD_TYPE_TINY_BLOB	mysql_com.h	290;"	d
+FIELD_TYPE_VAR_STRING	mysql_com.h	294;"	d
+FIELD_TYPE_YEAR	mysql_com.h	286;"	d
 G	oplib/src/md5.c	47;"	d	file:
 G1	my_protocol.c	/^static inline uint8_t G1(char **ptr)$/;"	f	file:
 G2	my_protocol.c	/^static inline uint16_t G2(char **ptr)$/;"	f	file:
@@ -146,37 +146,37 @@ LOG_WITH_STRERROR	oplib/include/log.h	/^    LOG_WITH_STRERROR$/;"	e	enum:__anon1
 Length	sha1.h	/^  uint64_t Length;		\/* Message length in bits      *\/$/;"	m	struct:SHA1_CONTEXT
 MAGICNUM	oplib/src/genpool.c	21;"	d	file:
 MASTER_ROLE	my_pool.h	/^    MASTER_ROLE,$/;"	e	enum:__anon1
-MAX_BIGINT_WIDTH	mysql_com.h	235;"	d
-MAX_BLOB_WIDTH	mysql_com.h	237;"	d
-MAX_CHAR_WIDTH	mysql_com.h	236;"	d
+MAX_BIGINT_WIDTH	mysql_com.h	242;"	d
+MAX_BLOB_WIDTH	mysql_com.h	244;"	d
+MAX_CHAR_WIDTH	mysql_com.h	243;"	d
 MAX_EVENT	oplib/src/handler.c	19;"	d	file:
 MAX_FREE_CHUNKS	oplib/src/genpool.c	24;"	d	file:
 MAX_FUNC_MAP	oplib/src/timer.c	23;"	d	file:
 MAX_HASH_BUCKET	oplib/src/conf.c	21;"	d	file:
 MAX_HOST_LEN	def.h	6;"	d
-MAX_INT_WIDTH	mysql_com.h	234;"	d
+MAX_INT_WIDTH	mysql_com.h	241;"	d
 MAX_KEY_LEN	oplib/src/conf.c	22;"	d	file:
 MAX_LINE_LEN	my_conf.c	60;"	d	file:
 MAX_LINE_LEN	oplib/src/conf.c	20;"	d	file:
 MAX_MASTER_NODE	def.h	11;"	d
-MAX_MEDIUMINT_WIDTH	mysql_com.h	233;"	d
+MAX_MEDIUMINT_WIDTH	mysql_com.h	240;"	d
 MAX_PASS_LEN	def.h	9;"	d
 MAX_SLAVE_NODE	def.h	10;"	d
-MAX_SMALLINT_WIDTH	mysql_com.h	232;"	d
+MAX_SMALLINT_WIDTH	mysql_com.h	239;"	d
 MAX_SRV_LEN	def.h	7;"	d
-MAX_TINYINT_WIDTH	mysql_com.h	231;"	d
+MAX_TINYINT_WIDTH	mysql_com.h	238;"	d
 MAX_USER_LEN	def.h	8;"	d
 MAX_VALUE_LEN	oplib/src/conf.c	23;"	d	file:
 MULTIPLE_KEY_FLAG	mysql_com.h	85;"	d
-MYSQL_ERRMSG_SIZE	mysql_com.h	220;"	d
+MYSQL_ERRMSG_SIZE	mysql_com.h	227;"	d
 MYSQL_NAMEDPIPE	mysql_com.h	46;"	d
 MYSQL_OPTION_MULTI_STATEMENTS_OFF	mysql_com.h	/^  MYSQL_OPTION_MULTI_STATEMENTS_OFF$/;"	e	enum:enum_mysql_set_option
 MYSQL_OPTION_MULTI_STATEMENTS_ON	mysql_com.h	/^  MYSQL_OPTION_MULTI_STATEMENTS_ON,$/;"	e	enum:enum_mysql_set_option
 MYSQL_SERVICENAME	mysql_com.h	47;"	d
-MYSQL_SHUTDOWN_KILLABLE_CONNECT	mysql_com.h	298;"	d
-MYSQL_SHUTDOWN_KILLABLE_LOCK_TABLE	mysql_com.h	300;"	d
-MYSQL_SHUTDOWN_KILLABLE_TRANS	mysql_com.h	299;"	d
-MYSQL_SHUTDOWN_KILLABLE_UPDATE	mysql_com.h	301;"	d
+MYSQL_SHUTDOWN_KILLABLE_CONNECT	mysql_com.h	305;"	d
+MYSQL_SHUTDOWN_KILLABLE_LOCK_TABLE	mysql_com.h	307;"	d
+MYSQL_SHUTDOWN_KILLABLE_TRANS	mysql_com.h	306;"	d
+MYSQL_SHUTDOWN_KILLABLE_UPDATE	mysql_com.h	308;"	d
 MYSQL_TYPE_BIT	mysql_com.h	/^			MYSQL_TYPE_BIT,$/;"	e	enum:enum_field_types
 MYSQL_TYPE_BLOB	mysql_com.h	/^			MYSQL_TYPE_BLOB=252,$/;"	e	enum:enum_field_types
 MYSQL_TYPE_DATE	mysql_com.h	/^			MYSQL_TYPE_DATE,   MYSQL_TYPE_TIME,$/;"	e	enum:enum_field_types
@@ -213,15 +213,15 @@ NEED_MASTER	conn_pool.h	/^    NEED_MASTER,$/;"	e	enum:__anon7
 NEED_MASTER_OR_SLAVE	conn_pool.h	/^    NEED_MASTER_OR_SLAVE$/;"	e	enum:__anon7
 NEED_SLAVE	conn_pool.h	/^    NEED_SLAVE,$/;"	e	enum:__anon7
 NEED_UNAVAIL	conn_pool.h	/^    NEED_UNAVAIL = 0,$/;"	e	enum:__anon7
-NET_READ_TIMEOUT	mysql_com.h	221;"	d
-NET_WAIT_TIMEOUT	mysql_com.h	223;"	d
-NET_WRITE_TIMEOUT	mysql_com.h	222;"	d
+NET_READ_TIMEOUT	mysql_com.h	228;"	d
+NET_WAIT_TIMEOUT	mysql_com.h	230;"	d
+NET_WRITE_TIMEOUT	mysql_com.h	229;"	d
 NOT_NULL_FLAG	mysql_com.h	82;"	d
 NO_DEFAULT_VALUE_FLAG	mysql_com.h	96;"	d
 NUM_FLAG	mysql_com.h	98;"	d
 OBJECT	Makefile	/^OBJECT = cli_pool.o conn_pool.o main.o my_buf.o my_ops.o my_pool.o work.o my_protocol.o sqldump.o passwd.o sha1.o my_conf.o$/;"	m
 OBJECT	oplib/src/Makefile	/^OBJECT = common.o conf.o dict.o genpool.o handler.o hash.o iprange.o log.o md5.o sock.o timer.o$/;"	m
-ONLY_KILL_QUERY	mysql_com.h	225;"	d
+ONLY_KILL_QUERY	mysql_com.h	232;"	d
 ON_UPDATE_NOW_FLAG	mysql_com.h	97;"	d
 PAGES_PER_CHUNK	oplib/src/genpool.c	23;"	d	file:
 PART_KEY_FLAG	mysql_com.h	99;"	d
@@ -268,17 +268,17 @@ SCRAMBLED_PASSWORD_CHAR_LENGTH	mysql_com.h	78;"	d
 SCRAMBLED_PASSWORD_CHAR_LENGTH_323	mysql_com.h	79;"	d
 SCRAMBLE_LENGTH	mysql_com.h	75;"	d
 SCRAMBLE_LENGTH_323	mysql_com.h	76;"	d
-SERVER_MORE_RESULTS_EXISTS	mysql_com.h	184;"	d
-SERVER_QUERY_NO_GOOD_INDEX_USED	mysql_com.h	185;"	d
-SERVER_QUERY_NO_INDEX_USED	mysql_com.h	186;"	d
-SERVER_STATUS_AUTOCOMMIT	mysql_com.h	183;"	d
-SERVER_STATUS_CLEAR_SET	mysql_com.h	215;"	d
-SERVER_STATUS_CURSOR_EXISTS	mysql_com.h	192;"	d
-SERVER_STATUS_DB_DROPPED	mysql_com.h	198;"	d
-SERVER_STATUS_IN_TRANS	mysql_com.h	182;"	d
-SERVER_STATUS_LAST_ROW_SENT	mysql_com.h	197;"	d
-SERVER_STATUS_METADATA_CHANGED	mysql_com.h	205;"	d
-SERVER_STATUS_NO_BACKSLASH_ESCAPES	mysql_com.h	199;"	d
+SERVER_MORE_RESULTS_EXISTS	mysql_com.h	191;"	d
+SERVER_QUERY_NO_GOOD_INDEX_USED	mysql_com.h	192;"	d
+SERVER_QUERY_NO_INDEX_USED	mysql_com.h	193;"	d
+SERVER_STATUS_AUTOCOMMIT	mysql_com.h	190;"	d
+SERVER_STATUS_CLEAR_SET	mysql_com.h	222;"	d
+SERVER_STATUS_CURSOR_EXISTS	mysql_com.h	199;"	d
+SERVER_STATUS_DB_DROPPED	mysql_com.h	205;"	d
+SERVER_STATUS_IN_TRANS	mysql_com.h	189;"	d
+SERVER_STATUS_LAST_ROW_SENT	mysql_com.h	204;"	d
+SERVER_STATUS_METADATA_CHANGED	mysql_com.h	212;"	d
+SERVER_STATUS_NO_BACKSLASH_ESCAPES	mysql_com.h	206;"	d
 SERVER_VERSION_LENGTH	mysql_com.h	30;"	d
 SET_FLAG	mysql_com.h	95;"	d
 SHA1CircularShift	sha1.c	59;"	d	file:
@@ -694,12 +694,12 @@ mysql_sha1_input	sha1.c	/^int mysql_sha1_input(SHA1_CONTEXT *context, const uint
 mysql_sha1_reset	sha1.c	/^int mysql_sha1_reset(SHA1_CONTEXT *context)$/;"	f
 mysql_sha1_result	sha1.c	/^int mysql_sha1_result(SHA1_CONTEXT *context,$/;"	f
 naivehash64	oplib/src/hash.c	/^inline uint64_t naivehash64(const void *key, int len)$/;"	f
-net_new_transaction	mysql_com.h	344;"	d
+net_new_transaction	mysql_com.h	351;"	d
 next	oplib/include/list.h	/^	struct list_head *next, *prev;$/;"	m	struct:list_head	typeref:struct:list_head::list_head
 node	my_pool.h	/^    void *node;$/;"	m	struct:__anon3
 num	oplib/include/iprange.h	/^    int max, num;$/;"	m	struct:_iprange_t
 offsetof	oplib/include/list.h	219;"	d
-packet_error	mysql_com.h	239;"	d
+packet_error	mysql_com.h	246;"	d
 padding	oplib/src/md5.c	/^static const uint8_t padding[64] = {$/;"	v	file:
 page_size	oplib/include/genpool.h	/^    uint32_t page_size, pages_per_chunk;$/;"	m	struct:_genpool_handler_t
 page_t	oplib/src/genpool.c	/^} page_t;$/;"	t	typeref:struct:__anon19	file:
@@ -709,7 +709,7 @@ parse_com	my_protocol.c	/^int parse_com(buf_t *buf, cli_com_t *com)$/;"	f
 parse_init	my_protocol.c	/^int parse_init(buf_t *buf, my_auth_init_t *init)$/;"	f
 parse_login	my_protocol.c	/^int parse_login(buf_t *buf, cli_auth_login_t *login)$/;"	f
 parse_req_sql	sqldump.c	/^static int parse_req_sql(conn_t *c, char *buf, int len)$/;"	f	file:
-pass	my_conf.h	/^    char pass[16];$/;"	m	struct:__anon21
+pass	my_conf.h	/^    char pass[64];$/;"	m	struct:__anon21
 pass	my_pool.h	/^    char pass[MAX_PASS_LEN];$/;"	m	struct:__anon5
 passwd	my_conf.h	/^    char *passwd;$/;"	m	struct:conf_t
 ping_head	my_pool.h	/^    struct list_head ping_head;$/;"	m	struct:__anon5	typeref:struct:__anon5::list_head
@@ -724,6 +724,7 @@ pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon13
 pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon14
 pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon15
 plug	my_protocol.h	/^    char plug[64];$/;"	m	struct:__anon11
+plugin	my_protocol.h	/^    char plugin[128];$/;"	m	struct:__anon12
 port	cli_pool.h	/^    uint16_t port;$/;"	m	struct:__anon10
 port	my_conf.h	/^    char *port;$/;"	m	struct:conf_t
 port	my_conf.h	/^    char port[16];$/;"	m	struct:__anon21

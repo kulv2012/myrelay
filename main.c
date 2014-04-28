@@ -84,7 +84,9 @@ int main(int argc, char *argv[])
     if(g_conf.daemon){
         daemon(1, 1);
     }
+work(listenfd);
 
+return 0 ;//暂时不用下面的功能
     // fork children
     for(i = 0; i < g_conf.worker; i++){
         while( (pid = fork()) < 0 ){
@@ -130,9 +132,9 @@ int main(int argc, char *argv[])
 
 static int signal_init(void)
 {
-    signal(SIGINT, SIG_IGN);
-    signal(SIGTERM, SIG_IGN);
-    signal(SIGQUIT, SIG_IGN);
+//    signal(SIGINT, SIG_IGN);
+//    signal(SIGTERM, SIG_IGN);
+//    signal(SIGQUIT, SIG_IGN);
     signal(SIGILL, SIG_IGN);
     signal(SIGTRAP, SIG_IGN);
     signal(SIGABRT, SIG_IGN);
