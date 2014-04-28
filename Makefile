@@ -46,6 +46,7 @@ install	: $(OBJECT)
 	gcc -o myrelay $(OBJECT) -L ./oplib/src/ -lop
 
 clean 	:
-	-rm -f $(OBJECT)
+	rm -f $(OBJECT)
+	make clean -C ./oplib/src/
 
 .PHONY	: install clean all

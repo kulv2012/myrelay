@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -I ../include/ -g -fPIC
-OBJECT = common.o conf.o dict.o genpool.o handler.o hash.o iprange.o log.o md5.o sock.o timer.o
+OBJECT = common.o conf.o dict.o genpool.o handler.o hash.o iprange.o log.o md5.o sock.o timer.o libop.a
 
 all: libop.so libop.a
 
