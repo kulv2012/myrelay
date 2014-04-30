@@ -26,8 +26,8 @@ enum{
 
 typedef struct{
     uint32_t connid;
-    my_conn_t *my;
-    void *cli;
+    my_conn_t *my;//对应的mysql连接是哪个 
+    void *cli;//对应这个连接结构的客户端连接 
     buf_t buf;
     int state;
     time_t state_time;

@@ -16,7 +16,6 @@
 
 extern log_t *g_log;
 
-#define MAX_EVENT 10000
 
 typedef int (cb_func)(int fd, void *arg);
 
@@ -38,7 +37,7 @@ static int hccount = 0;
  */
 
 int init_handler(int count)
-{
+{//初始化epoll相关的数据，句柄等 
     int i;
     handler_callback_t *ptr;
 
@@ -145,8 +144,6 @@ int del_handler(int fd)
     if(in_handler(fd)){
         if( (res = epoll_ctl(epfd, EPOLL_CTL_DEL, fd, &ev)) < 0 ){
             log_err(g_log, "epoll_ctl error\n");
-        } else {
-            debug(g_log, "epoll_ctl success\n");
         }
     } else {
         debug(g_log, "warning: not in handler when del handler, ignore it\n");
@@ -242,7 +239,7 @@ int epoll_handler(int timeout)
 
     for(i = 0; i < nfds; i++){
         ptr = events[i].data.ptr;
-        if(ptr->callback){
+        if(ptr->callback){//调用其callback
             res = ptr->callback(ptr->fd, ptr->arg);
         }
     }

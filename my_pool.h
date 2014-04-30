@@ -19,8 +19,8 @@ typedef struct{
 } my_ctx_t;
 
 typedef struct{
-    int fd;
-    void *node;
+    int fd;//mysql连接对应的tcp socket fd
+    void *node;//这个mysql连接所属的机器节点是哪个
     struct list_head link;
     void *conn;
     buf_t buf;
@@ -40,18 +40,18 @@ typedef struct{
 
 typedef struct{
     char host[MAX_HOST_LEN];
-    char srv[MAX_SRV_LEN];
+    char srv[MAX_SRV_LEN];//这是端口····这名字 
     char user[MAX_USER_LEN];
     char pass[MAX_PASS_LEN];
-    struct list_head used_head;
-    struct list_head avail_head;
+    struct list_head used_head;//已经分配给某个客户端的mysql连接list
+    struct list_head avail_head;//成功建立连接，并且空闲可用的mysql连接
     struct list_head dead_head;
     struct list_head raw_head;
     struct list_head fail_head;
     struct list_head ping_head;
     my_info_t *info;
-    int avail_count;
-    int role;
+    int avail_count;//这个机器的可用mysql连接数目
+    int role;//SLAVE_ROLE还是master
     int closing;
     time_t closing_time;
 } my_node_t;

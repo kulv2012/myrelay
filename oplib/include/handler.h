@@ -16,6 +16,8 @@ int mod_handler(int fd, uint32_t event, void *cb, void *arg);
 */
 int epoll_handler(int timeout);
 
+#define MAX_EVENT 100000
+
 #ifdef __cplusplus
 }
 #endif

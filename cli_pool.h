@@ -13,7 +13,7 @@ typedef struct{
     uint32_t ip;
     uint16_t port;
     struct list_head link;
-    conn_t *conn;
+    conn_t *conn;//这个客户端连接对应的中间连接结构为conn_t, 这样可以进一步找到mysql连接
     buf_t buf;
     char scram[SCRAMBLE_LENGTH + 1];
 } cli_conn_t;

@@ -183,7 +183,7 @@ static int log_doit(log_t *log, int level, int flag, const char *file, int line,
     }
     buf[len] = '\0';
 
-	write(1, buf, len); 
+	//write(1, buf, len); 
     if(log_inited){
         n = write(log->fd, buf, len);
     } else {

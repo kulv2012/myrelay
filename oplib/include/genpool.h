@@ -10,10 +10,13 @@ extern "C" {
 #endif
 
 typedef struct _genpool_handler_t{
-    uint32_t free_chunks, max_free_chunks;
+    uint32_t free_chunks ;
+	uint32_t max_free_chunks;
     uint32_t prealloc_chunks;
-    uint32_t page_size, pages_per_chunk;
-    uint32_t total_chunks, max_total_chunks;
+    uint32_t page_size; //一个元素的大小 
+	uint32_t pages_per_chunk;
+    uint32_t total_chunks;
+	uint32_t max_total_chunks;
     struct list_head used_chunks_head;
     struct list_head free_chunks_head;
     struct list_head full_chunks_head;

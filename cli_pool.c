@@ -49,7 +49,7 @@ int cli_pool_init(int count)
 
 static cli_conn_t *
 cli_conn_alloc(conn_t *conn, int fd, uint32_t ip, uint16_t port)
-{
+{//申请一个客户端连接结构，跟当前的搭桥的连接结构挂接
     int res;
     cli_conn_t *c;
 
@@ -58,7 +58,7 @@ cli_conn_alloc(conn_t *conn, int fd, uint32_t ip, uint16_t port)
         return NULL;
     }
 
-    c->fd = fd;
+    c->fd = fd;//初始化相关结构
     c->ip = ip;
     c->port = port;
     c->conn = conn;
@@ -88,7 +88,7 @@ cli_conn_alloc(conn_t *conn, int fd, uint32_t ip, uint16_t port)
  */
 
 int cli_conn_open(conn_t *conn, int fd, uint32_t ip, uint16_t port)
-{
+{//调用cli_conn_alloc申请一个客户端连接结构，跟当前的中间conn挂接
     cli_conn_t *c;
 
     if(conn == NULL){
@@ -100,7 +100,7 @@ int cli_conn_open(conn_t *conn, int fd, uint32_t ip, uint16_t port)
         return -1;
     }
 
-    conn->cli = c;
+    conn->cli = c;//对应这个连接结构的客户端连接
 
     return 0;
 }

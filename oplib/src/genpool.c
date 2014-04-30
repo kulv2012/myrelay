@@ -83,7 +83,7 @@ static int _alloc_a_chunk(genpool_handler_t *g)
     INIT_LIST_HEAD(&(c->free_pages_head));
     c->chunk_addr = ptr;
 
-    for(i = 0; i < n; i++){
+    for(i = 0; i < n; i++){//将每个元素初始化一下，链表组织
         p = (page_t *)ptr;
         p->belong_chunk = c;
         p->magicnum = MAGICNUM;
@@ -148,13 +148,13 @@ genpool_handler_t *genpool_init(size_t size, size_t max)
     g->free_chunks = 0;
     g->max_free_chunks = MAX_FREE_CHUNKS;
     g->prealloc_chunks = PREALLOC_CHUNKS;
-    g->page_size = size;
+    g->page_size = size;//一个元素的大小
     g->pages_per_chunk = PAGES_PER_CHUNK;
     g->total_chunks = 0;
     g->max_total_chunks = max / g->pages_per_chunk + 1;
 
     for(i = 0; i < g->max_free_chunks; i++){
-        ret = _alloc_a_chunk(g);
+        ret = _alloc_a_chunk(g);//申请一块内存，初始化之。
         if(ret < 0){
             if(ret == -1){
                 log(g_log, "reach max_total_chunk[%d]\n", g->max_free_chunks);

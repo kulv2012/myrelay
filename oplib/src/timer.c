@@ -20,7 +20,7 @@ struct timer_func_map{
     int interval;
 };
 
-#define MAX_FUNC_MAP 256
+#define MAX_FUNC_MAP 1024
 
 static struct timer_func_map func_map[MAX_FUNC_MAP];
 static int func_map_index;
@@ -33,7 +33,7 @@ static int func_map_index;
  */
 
 int timer_init(void)
-{
+{//初始化func_map， 最多MAX_FUNC_MAP隔定时器事件
     int i;
 
     for(i = 0; i < MAX_FUNC_MAP; i++){
@@ -88,12 +88,12 @@ int timer_register(timer_func_t func, unsigned long arg, char *info, int interva
  */
 
 int timer(void)
-{
+{//循环遍历，处理定时器
     int i, ret;
     time_t now = time(NULL);
     struct timer_func_map *fmap;
 
-    for(i = 0; i < func_map_index; i++){
+    for(i = 0; i < func_map_index; i++){//这里最好能够优化一下，记录下次的最近一个定时器还要多久触发。类似redis,来确定epoll的超时
         fmap = &(func_map[i]);
         if(fmap->func == NULL){
             break;

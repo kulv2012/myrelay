@@ -235,7 +235,7 @@ int parse_init(buf_t *buf, my_auth_init_t *init)
  */
 
 int make_login(buf_t *buf, cli_auth_login_t *login)
-{
+{//拼接登陆mysql服务器的认证报文,用来一点点发送
     char *ptr;
     int total = 0, len;
 

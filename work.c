@@ -62,7 +62,7 @@ int work(int fd)
         exit(-1);
     }
 
-    if(init_handler(100000) < 0){
+    if(init_handler( MAX_EVENT ) < 0){
         log(g_log, "handler init error\n");
         exit(-1);
     } else {
@@ -94,7 +94,7 @@ int work(int fd)
     }
 
     // mysql connection pool init
-    if(my_pool_init(g_conf.max_connections) < 0){
+    if(my_pool_init(g_conf.max_connections) < 0){//设置mysql连接的初始化结构，各种定时器等
         log(g_log, "mysql pool init error\n");
         exit(-1);
     } else {
@@ -123,19 +123,17 @@ int work(int fd)
     }
 
     // mysql register
-    for(i = 0; i < myconf_cur.mcount; i++){
+    for(i = 0; i < myconf_cur.mcount; i++){//连接master
         mynode = &(myconf_cur.master[i]);
-        res = my_master_reg(mynode->host, mynode->port, \
-                    mynode->user, mynode->pass, mynode->cnum);
+        res = my_master_reg(mynode->host, mynode->port, mynode->user, mynode->pass, mynode->cnum);
         if(res < 0){
             log(g_log, "my_master_reg error\n");
         }
     }
 
-    for(i = 0; i < myconf_cur.scount; i++){
+    for(i = 0; i < myconf_cur.scount; i++){//提前连接slave
         mynode = &(myconf_cur.slave[i]);
-        res = my_slave_reg(mynode->host, mynode->port, \
-                    mynode->user, mynode->pass, mynode->cnum);
+        res = my_slave_reg(mynode->host, mynode->port, mynode->user, mynode->pass, mynode->cnum);
         if(res < 0){
             log(g_log, "my_slave_reg error\n");
         }
@@ -171,7 +169,7 @@ int work(int fd)
  */
 
 static int accept_client_cb(int listenfd, void *arg)
-{
+{//work()里面设置的客户端监听句柄
     int clientfd, res = 0;
     uint32_t clientip;
     uint16_t clientport;
@@ -183,7 +181,8 @@ static int accept_client_cb(int listenfd, void *arg)
     debug(g_log, "accept_client_cb callback\n");
 
     while(1){
-        if(!my_pool_have_conn()){
+        if(!my_pool_have_conn()){//如果没有足够的mysql连接了，不接受这个accept，也就不会接收accept这个客户端连接。
+			//其实这个完全可以在验证成功后再做，不然容易被攻击。
             debug(g_log, "mysql pool is empty, waiting\n");
             break;
         }
@@ -204,20 +203,17 @@ static int accept_client_cb(int listenfd, void *arg)
         clientip = ntohl(cliaddr.sin_addr.s_addr);
         clientport = ntohs(cliaddr.sin_port);
 
-        if( (c = conn_open(clientfd, clientip, clientport)) == NULL ){
+        if( (c = conn_open(clientfd, clientip, clientport)) == NULL ){//分配conn_t和cli_conn_t， 并挂接起来
             log(g_log, "connection alloc fail, close connection\n");
             close(clientfd);
         } else {
             debug(g_log, "conn:%d connection alloc success\n", c->connid);
         }
 
-        log(g_log, "conn:%d client[%s:%d] connection accept\n", \
-                    c->connid, inet_ntoa(cliaddr.sin_addr), \
-                    ntohs(cliaddr.sin_port));
+        log(g_log, "conn:%d client[%s:%d] connection accept\n", c->connid, inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
 
         if( (res = cli_hs_stage1_prepare(c)) < 0 ){
-            log(g_log, "conn:%d cli_hs_sate1_prepare error, \
-                            close connection\n", c->connid);
+            log(g_log, "conn:%d cli_hs_sate1_prepare error, close connection\n", c->connid);
             conn_close(c);
         }
     }

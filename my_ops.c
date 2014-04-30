@@ -63,7 +63,7 @@ static uint32_t cap_umask = CLIENT_FOUND_ROWS | CLIENT_NO_SCHEMA | \
  */
 
 int my_hs_stage1_cb(int fd, void *arg)
-{
+{//读取mysql的连接认证原始数据
     int done, res = 0;
     my_conn_t *my;
     buf_t *buf;
@@ -86,11 +86,6 @@ int my_hs_stage1_cb(int fd, void *arg)
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "read mysql error res[%d]\n", res);
         goto end;
-    } else if(res == 0) {
-        debug(g_log, "mysql closed\n");
-        goto end;
-    } else {
-        debug(g_log, "my_real_read[%d] success\n", res);
     }
 
     if(done){
@@ -164,7 +159,7 @@ end:
  */
 
 int my_hs_stage2_cb(int fd, void *arg)
-{
+{//给服务器发送认证数据，并且注册读取结果回调
     int done, res = 0;
     my_conn_t *my;
     buf_t *buf;
@@ -175,13 +170,8 @@ int my_hs_stage2_cb(int fd, void *arg)
     debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
-        log_err(g_log, "my_real_write error[%d]\n", res);
+        log_err(g_log, "my_real_write error[%d], errno:%d, errmsg:%s\n", res, errno, strerror(errno) );
         goto end;
-    } else if(res == 0) {
-        log(g_log, "my_real_write error, res[%d]\n", res);
-        goto end;
-    } else {
-        debug(g_log, "my_real_write success[%d]\n", res);
     }
 
     if(done){
@@ -191,7 +181,7 @@ int my_hs_stage2_cb(int fd, void *arg)
         } else {
             debug(g_log, "del_handler fd[%d] success\n", fd);
         }
-
+		//认证数据发送完成后，下一步进行结果验证，登陆结果
         if( (res = add_handler(fd, EPOLLIN, my_hs_stage3_cb, arg)) < 0 ){
             log(g_log, "add_handler fd[%d] error\n", fd);
             goto end;
@@ -232,11 +222,6 @@ int my_hs_stage3_cb(int fd, void *arg)
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "my_real_read[%d]\n", res);
         goto end;
-    } else if(res == 0){
-        log(g_log, "mysql conn close. errno:%d, errmsg: %s\n",errno, strerror(errno) );
-        goto end;
-    } else {
-        debug(g_log, "my_real_read[%d], fd[%d]\n", res, fd);
     }
 
     if(done){
@@ -258,7 +243,7 @@ int my_hs_stage3_cb(int fd, void *arg)
 
         if(result.result == 0){
             debug(g_log, "mysql authorized success\n");
-            res = my_conn_set_avail(my);
+            res = my_conn_set_avail(my);//跟mysql直接的验证成功了，下面标记这个连接为可用的,放入node的avail_head上面
         } else {
             log(g_log, "mysql authorized error, errmsg:[%s]\n", result.errmsg);
             goto end;
@@ -362,11 +347,6 @@ int cli_hs_stage1_cb(int fd, void *arg)
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
         goto end;
-    } else if(res == 0){
-        log(g_log, "conn:%u my_real_write error, res[%d]\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_write success, res[%d]\n", c->connid, res);
     }
 
     if(done){
@@ -419,11 +399,6 @@ int cli_hs_stage2_cb(int fd, void *arg)
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_read error\n", c->connid);
         goto end;
-    } else if(res == 0) {
-        log(g_log, "conn:%u my_real_read error, res[%d]\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_read success, res[%d]\n", c->connid, res);
     }
 
     if(done){
@@ -513,11 +488,6 @@ int cli_hs_stage3_cb(int fd, void *arg)
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
         goto end;
-    } else if(res == 0) {
-        log(g_log, "conn:%u my_real_write error, res[%d]\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_write res[%d]\n", c->connid, res);
     }
 
     if(done){
@@ -570,11 +540,6 @@ static int cli_hs_auth_fail_cb(int fd, void *arg)
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
         goto end;
-    } else if(res == 0) {
-        log(g_log, "conn:%u my_real_write error, res[%d]\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_write res[%d]\n", c->connid, res);
     }
 
     if(done){
@@ -633,14 +598,9 @@ int cli_query_cb(int fd, void *arg)
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_read error\n", c->connid);
         goto end;
-    } else if(res == 0){
-        log(g_log, "conn:%u client conn close\n", c->connid);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_read success, res[%d]\n", c->connid, res);
     }
 
-    if(done){
+    if(done){//读取了一个完整的包，下面准备处理 
         if( (res = parse_com(buf, &com)) < 0 ){
             log(g_log, "conn:%u parse com error\n", c->connid);
             goto end;
@@ -706,13 +666,14 @@ int cli_query_cb(int fd, void *arg)
             case COM_DROP_DB:
                 log(g_log, "drop db\n");
             case COM_QUERY:
-                if( (res = conn_alloc_my_conn(c)) < 0 ){
+				//下面为了选一个合适的连接，虽然当前分配了，但可能需要切换主从
+                if( (res = conn_alloc_my_conn(c)) < 0 ){ 
                     log(g_log, "conn:%u alloc mysql conn error\n", c->connid);
                     goto end;
                 }
 
                 my = c->my;
-                if(strcmp(my->ctx.curdb, c->curdb)){
+                if(strcmp(my->ctx.curdb, c->curdb)){//还需要给服务器发送切换数据库的命令 
                     if( (res = my_use_db_prepare(c)) < 0 ){
                         log(g_log, "conn:%u my_use_db_prepare error\n", c->connid);
                         goto end;
@@ -720,7 +681,8 @@ int cli_query_cb(int fd, void *arg)
                         debug(g_log, "conn:%u my_use_db_prepare success\n", c->connid);
                     }
 
-                    conn_state_set_prepare_mysql(c);
+                    conn_state_set_prepare_mysql(c);//标记为这个在等待切换数据库，完成后才能做后面的事情，
+					//就是真正处理命令转发my_use_db_prepare里面会放回调的
 
                     break;
                 }
@@ -767,11 +729,6 @@ int my_query_cb(int fd, void *arg)
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
         goto end;
-    } else if(res == 0) {
-        log(g_log, "conn:%u my_real_write error, res[%d]\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_write success, res[%d]\n", c->connid, res);
     }
 
     if(done){
@@ -828,9 +785,6 @@ int my_answer_cb(int fd, void *arg)
 
     if( (res = my_real_read_result_set(fd, buf)) < 0 ){
         log_err(g_log, "conn:%u my_real_read_result_set error\n", c->connid);
-        goto end;
-    } else if(res == 0) {
-        debug(g_log, "conn:%u mysql conn close\n", c->connid);
         goto end;
     } else {
         debug(g_log, "conn:%u my_real_read success, res[%d]\n", c->connid, res);
@@ -891,11 +845,6 @@ int cli_answer_cb(int fd, void *arg)
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
         goto end;
-    } else if(res == 0) {
-        log(g_log, "conn:%u my_real_write, res[%d]\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_write success, res[%d]\n", c->connid, res);
     }
 
     if(done){
@@ -952,18 +901,6 @@ static int my_real_read(int fd, buf_t *buf, int *done)
     ptr = buf->ptr;
     *done = 0;
 
-    if(buf->used >= HEADER_SIZE){
-        pktlen = 0;
-        memcpy(&pktlen, ptr, 3);
-        if((pktlen + HEADER_SIZE) > buf->size){
-            if(buf_realloc(buf, pktlen + HEADER_SIZE) == NULL){
-                return -1;
-            }
-        }
-
-        debug(g_log, "pktlen: %d\n", pktlen);
-    }
-
     left = buf->size - buf->used;
     ptr = buf->ptr + buf->used;
 
@@ -971,6 +908,8 @@ AGAIN:
     if( (n = read(fd, ptr, left)) < 0 ){
         if(errno == EINTR){
             goto AGAIN;
+		} else if( errno == EAGAIN || errno == EWOULDBLOCK){
+			return 0 ;
         } else {
             return n;
         }
@@ -981,17 +920,22 @@ AGAIN:
         buf->pos += n;
 
         if(buf->used >= HEADER_SIZE){
+			//如果已经读取到了4个字节的固定长度，那么就可以拿到数据包有多大了，也就是这次应该读取的长度是多少大
             ptr = buf->ptr;
             pktlen = 0;
             memcpy(&pktlen, ptr, 3);
-            if(buf->used >= (pktlen + HEADER_SIZE)){
+			if((pktlen + HEADER_SIZE) > buf->size){//总大小是否超过了当前缓冲的大小，如果是需要重新申请一块大内存
+				if(buf_realloc(buf, pktlen + HEADER_SIZE) == NULL){
+					return -1;
+				}
+			}
+            if(buf->used >= (pktlen + HEADER_SIZE)){//读取完毕了
                 *done = 1;
             }
-            debug(g_log, "pktlen: %d\n", pktlen);
         }
-
-        return n;
-    }
+		return n;
+	}
+	return 0 ;
 }
 
 /*
@@ -1013,6 +957,8 @@ AGAIN:
     if( (n = read(fd, ptr, left)) < 0 ){
         if(errno == EINTR){
             goto AGAIN;
+		}else if( errno == EAGAIN || errno == EWOULDBLOCK){
+			return 0 ;
         } else {
             return n;
         }
@@ -1045,12 +991,15 @@ static int my_real_write(int fd, buf_t *buf, int *done)
 
 AGAIN:
     if( (n = write(fd, ptr, left)) < 0 ){
+		//返回小于0，可能有问题
         if(errno == EINTR){
             goto AGAIN;
+		} else if( errno == EAGAIN || errno == EWOULDBLOCK ){
+			return 0 ;//可能会被阻塞，过会在写
         } else {
             return n;
         }
-    } else if(n == 0) {
+    } else if(n == 0) {//等于0，也就是啥也没法送出
         return n;
     } else {
         buf->pos += n;
@@ -1060,6 +1009,7 @@ AGAIN:
 
         return n;
     }
+	return 0 ;
 }
 
 /*
@@ -1137,11 +1087,6 @@ static int cli_com_ok_write_cb(int fd, void *arg)
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
         goto end;
-    } else if(res == 0) {
-        log(g_log, "conn:%u my_real_write, res[%d]\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_write success, res[%d]\n", c->connid, res);
     }
 
     if(done){
@@ -1279,11 +1224,6 @@ static int my_use_db_req_cb(int fd, void *arg)
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
         goto end;
-    } else if(res == 0) {
-        log(g_log, "conn:%u my_real_write error, %d\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_write success, %d\n", c->connid, res);
     }
 
     if(done){
@@ -1330,11 +1270,6 @@ static int my_use_db_resp_cb(int fd, void *arg)
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_read error\n", c->connid);
         goto end;
-    } else if(res == 0) {
-        log(g_log, "conn:%u mysql conn close\n", c->connid, res);
-        goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_read success, %d\n", c->connid, res);
     }
 
     if(done){
@@ -1389,8 +1324,6 @@ int my_ping_prepare(my_conn_t *my)
     res = add_handler(fd, EPOLLOUT, my_ping_req_cb, my);
     if(res < 0){
         log(g_log, "add_handler error\n");
-    } else {
-        debug(g_log, "add_handler success\n");
     }
 
     buf_rewind(buf);
@@ -1417,11 +1350,6 @@ static int my_ping_req_cb(int fd, void *arg)
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "my_real_write error\n");
         goto end;
-    } else if(res == 0) {
-        log(g_log, "my_real_write error, %d\n", res);
-        goto end;
-    } else {
-        debug(g_log, "my_real_write success, %d\n", res);
     }
 
     if(done){
@@ -1466,11 +1394,6 @@ static int my_ping_resp_cb(int fd, void *arg)
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "my_real_read error\n");
         goto end;
-    } else if(res == 0) {
-        log(g_log, "mysql conn close\n");
-        goto end;
-    } else {
-        debug(g_log, "my_real_read success, %d\n", res);
     }
 
     if(done){

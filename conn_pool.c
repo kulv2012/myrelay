@@ -45,7 +45,7 @@ static struct list_head read_client_head;
 static struct list_head write_mysql_head;
 static struct list_head read_mysql_write_client_head;
 static struct list_head prepare_mysql_head;
-static struct list_head idle_head;
+static struct list_head idle_head;//接到一个客户端 连接后，将其放到这里
 
 /*
  * fun: init connection pool and timer
@@ -61,6 +61,7 @@ int conn_pool_init(size_t count)
 
     pid = getpid();
 
+	//申请一个给连接用的内存池
     conn_pool = genpool_init(sizeof(conn_t), count);
     if(conn_pool == NULL){
         log(g_log, "genpool init error\n");
@@ -75,7 +76,7 @@ int conn_pool_init(size_t count)
 
     srand(pid * time(NULL));
     connid = rand();
-
+//注册各种事件的超时函数
     if( (res = timer_register(read_client_timeout_timer, 30, \
                                 "read_client_timeout_timer", 1) < 0) ){
         log(g_log, "read_client_timeout_timer register error\n");
@@ -173,16 +174,16 @@ static conn_t *conn_alloc(void)
  */
 
 conn_t *conn_open(int fd, uint32_t ip, uint16_t port)
-{
+{//分配conn_t和cli_conn_t， 并挂接起来 
     int res = 0;
     conn_t *c;
 
-    if( (c = conn_alloc()) == NULL ){
+    if( (c = conn_alloc()) == NULL ){//这个连接其实是个中间搭桥的连接。
         log(g_log, "conn alloc error\n");
         return NULL;
     }
 
-    if( (res = cli_conn_open(c, fd, ip, port)) < 0 ){
+    if( (res = cli_conn_open(c, fd, ip, port)) < 0 ){//将c跟当前的fd连接起来，建立一个客户端连接结构
         log(g_log, "cli conn open error\n");
         conn_release(c);
         return NULL;
@@ -289,6 +290,7 @@ int conn_close_with_my(conn_t *c)
 
 int conn_alloc_my_conn(conn_t *c)
 {
+	//下面为了选一个合适的连接，虽然当前分配了，但可能需要切换
     int type = NEED_MASTER_OR_SLAVE, dirty = 0;
     int myrole = UNAVAIL_ROLE;
     my_conn_t *my = c->my;
@@ -324,6 +326,7 @@ int conn_alloc_my_conn(conn_t *c)
         }
     }
 
+	//下面为了选一个合适的连接，虽然当前分配了，但可能需要切换
     if(myrole == UNAVAIL_ROLE){
         if(type == NEED_MASTER){
             if( (my = my_master_conn_get(c, cli->ip, cli->port)) == NULL ){
@@ -531,8 +534,7 @@ static int read_client_timeout_timer(unsigned long arg)
     struct list_head *head;
 
     head = &read_client_head;
-    return _conn_state_timeout_timer(arg, head, \
-                    g_conf.read_client_timeout, "read_client_timeout");
+    return _conn_state_timeout_timer(arg, head, g_conf.read_client_timeout, "read_client_timeout");
 }
 
 /*
