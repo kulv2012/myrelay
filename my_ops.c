@@ -597,7 +597,7 @@ int cli_query_cb(int fd, void *arg)
 
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_read error\n", c->connid);
-        goto end;
+        goto end;//客户端数据读取出错,关闭2端的连接?
     }
 
     if(done){//读取了一个完整的包，下面准备处理 
@@ -618,7 +618,7 @@ int cli_query_cb(int fd, void *arg)
                 log(g_log, "shutdown\n");
                 log(g_log, "conn:%u command ignored\n", c->connid);
                 res = cli_com_ignored(c);
-                goto end;
+                goto end;//挂掉这个连接
 
             // command ignored
             case COM_REFRESH:
@@ -632,8 +632,10 @@ int cli_query_cb(int fd, void *arg)
                 break;
 
             case COM_INIT_DB:
-                log(g_log, "init db\n");
+                log(g_log, "init db, ignore frist.\n");
+				res = cli_com_ignored(c);//先忽略这个数据库初始化请求，待会query的时候再看数据库是否一样。这样能避免重复use db
                 strncpy(c->curdb, c->arg, sizeof(c->curdb) - 1);
+				/*
                 if( (res = cli_com_forward(c)) < 0 ){
                     log(g_log, "conn:%u cli_com_forward error\n", c->connid);
                     goto end;
@@ -645,7 +647,7 @@ int cli_query_cb(int fd, void *arg)
                 my->ctx.curdb[sizeof(my->ctx.curdb) - 1] = '\0';
 
                 conn_state_set_writing_mysql(c);
-
+				*/
                 break;
 
             // command unsupported
@@ -701,7 +703,8 @@ int cli_query_cb(int fd, void *arg)
     return res;
 
 end:
-    conn_close_with_my(c);
+    //conn_close_with_my(c);
+	conn_close(c) ;
 
     return res;
 }

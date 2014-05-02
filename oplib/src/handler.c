@@ -15,7 +15,7 @@
 #include "handler.h"
 
 extern log_t *g_log;
-
+extern unsigned long  g_logid;
 
 typedef int (cb_func)(int fd, void *arg);
 
@@ -146,7 +146,7 @@ int del_handler(int fd)
             log_err(g_log, "epoll_ctl error\n");
         }
     } else {
-        debug(g_log, "warning: not in handler when del handler, ignore it\n");
+        debug(g_log, "warning: not in handler when del handler, fd:%d ignore it.\n", fd);
     }
 
     ptr = hcptr + fd;
@@ -235,11 +235,12 @@ int epoll_handler(int timeout)
     handler_callback_t *ptr;
 
     nfds = epoll_wait(epfd, events, MAX_EVENT, timeout);
-    debug(g_log, "nfds: %d ready\n", nfds);
+    //debug(g_log, "nfds: %d ready\n", nfds);
 
     for(i = 0; i < nfds; i++){
         ptr = events[i].data.ptr;
         if(ptr->callback){//调用其callback
+			++ g_logid ;
             res = ptr->callback(ptr->fd, ptr->arg);
         }
     }

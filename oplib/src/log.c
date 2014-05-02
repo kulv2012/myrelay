@@ -21,6 +21,7 @@
 #define BUFFSIZE 8192
 
 static int log_inited = 0;
+unsigned long g_logid = 0 ;
 
 static int log_doit(log_t *log, int level, int flag, const char *file, \
                     int line, const char *func, const char *fmt, va_list ap);
@@ -156,8 +157,7 @@ static int log_doit(log_t *log, int level, int flag, const char *file, int line,
     localtime_r(&t, &tm);
     strftime(timebuf, sizeof(timebuf), "%F %T", &tm);
 
-    n = snprintf(buf + len, BUFFSIZE - len - 1, "%s pid[%d] %s[%d] %s() - ", \
-                                    timebuf, pid, file, line, func);
+    n = snprintf(buf + len, BUFFSIZE - len - 1, "%s pid[%d] logid[%d] %s[%d] %s() - ", timebuf, pid, g_logid, file, line, func);
 
     if(n > BUFFSIZE - len - 1){
         n = BUFFSIZE - len - 1;

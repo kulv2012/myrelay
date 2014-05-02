@@ -255,7 +255,7 @@ int conn_close(conn_t *c)
  */
 
 int conn_close_with_my(conn_t *c)
-{
+{//这个操作很重，会干掉mysql的连接，已经客户端连接等所有数据!!!!
     int res = 0;
 
     list_del_init(&(c->link));
@@ -308,8 +308,8 @@ int conn_alloc_my_conn(conn_t *c)
 
     if( (!strncasecmp(c->arg, "begin", 5)) || \
                         (!strncasecmp(c->arg, "start", 5)) || \
-                            (!strncasecmp(c->arg, "set", 3)) || \
                                 (!strncasecmp(c->arg, "lock", 4)) ){
+		//(!strncasecmp(c->arg, "set", 3)) || \
         type = NEED_MASTER;
         dirty = 1;
     }

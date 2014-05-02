@@ -148,7 +148,6 @@ int work(int fd)
     }
 
     while(1){
-        debug(g_log, "epoll_handler\n");
         res = epoll_handler(1000);
         // timer
         timer();

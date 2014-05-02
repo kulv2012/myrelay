@@ -568,7 +568,7 @@ int my_conn_close(my_conn_t *my)
     if( (res = del_handler(my->fd)) < 0 ){
         log(g_log, "del_handler error, ignore it\n");
     } else {
-        debug(g_log, "del_handler success\n");
+        ;//debug(g_log, "del_handler success\n");
     }
 
     if(my->fd >= 0){
@@ -630,7 +630,7 @@ int my_conn_put(my_conn_t *my)
     if( (res = del_handler(my->fd)) < 0 ){
         log(g_log, "del_handler error, ignore it\n");
     } else {
-        debug(g_log, "del_handler success\n");
+        ;//debug(g_log, "del_handler success\n");
     }
 
     if(my_conn_ctx_is_dirty(my)){
@@ -664,7 +664,7 @@ static int my_conn_set_used(my_conn_t *my, void *ptr)
     if( (res = del_handler(my->fd)) < 0 ){//清楚，重新再来
         log(g_log, "del_handler error, ignore it\n");
     } else {
-        debug(g_log, "del_handler success\n");
+        ;//debug(g_log, "del_handler success\n");
     }
 
     node->avail_count--;//减少可用连接数  
