@@ -223,7 +223,7 @@ int my_pool_init(int count)
     mypool->slave_num = 0;
     mypool->master_num = 0;
 
-    res = timer_register(my_conn_dead_reconnect_timer, 30, "my_conn_dead_reconnect_timer", 1);
+    res = timer_register(my_conn_dead_reconnect_timer, 9, "my_conn_dead_reconnect_timer", 1);
     if(res < 0){
         log(g_log, "my_conn_dead_reconnect_timer register error\n");
         return -1;
@@ -277,7 +277,7 @@ static int make_my_conn(my_conn_t *my)
     node = my->node;
 
     if( (res = my_conn_init(my, node)) < 0 ){
-        return res;//这里似乎多次init了
+        return res;
     }
 
     fd = connect_nonblock(node->host, node->srv, &done);
@@ -784,7 +784,7 @@ static int my_conn_set_ping(my_conn_t *my)
  */
 
 static int my_conn_dead_reconnect_timer(unsigned long arg)
-{
+{//扫描每一个机器的mysql连接dead_head链表，将里面死掉的连接恢复
     int i, res = 0;
     my_node_t *node;
     my_conn_t *my;
@@ -1014,7 +1014,7 @@ static int my_conn_pool_ping_timer(unsigned long arg)
         if(my_node_is_closing(node)){
             continue;
         }
-        head = &(node->avail_head);
+        head = &(node->avail_head);//这里最好还是判断一下上次交互时间比较好，避免不必要的ping
         list_for_each_safe(pos, n, head){
             if(count++ >= arg){
                 break;

@@ -579,8 +579,7 @@ int cli_query_cb(int fd, void *arg)
     if(c->state == STATE_IDLE){
         conn_state_set_reading_client(c);
         gettimeofday(&(c->tv_start), NULL);
-    } else if( (c->state == STATE_PREPARE_MYSQL) || \
-               (c->state == STATE_WRITING_MYSQL) ){
+    } else if( (c->state == STATE_PREPARE_MYSQL) || (c->state == STATE_WRITING_MYSQL) ){
         log(g_log, "conn:%u client can be read when preparing or writing mysql\n", c->connid);
         goto end;
     } else if(c->state == STATE_READ_MYSQL_WRITE_CLIENT) {
