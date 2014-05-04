@@ -291,77 +291,19 @@ int conn_close_with_my(conn_t *c)
 int conn_alloc_my_conn(conn_t *c)
 {
 	//下面为了选一个合适的连接，虽然当前分配了，但可能需要切换
-    int type = NEED_MASTER_OR_SLAVE, dirty = 0;
-    int myrole = UNAVAIL_ROLE;
+    int dirty = 0;
     my_conn_t *my = c->my;
     cli_conn_t *cli = c->cli;
-    my_node_t *node;
 
-    if(my && my_conn_ctx_is_dirty(my)){
+    if(my != NULL ){
         return 0;
     }
 
-    if(my != NULL){
-        node = my->node;
-        myrole = node->role;
-    }
-
-    if( (!strncasecmp(c->arg, "begin", 5)) || \
-                        (!strncasecmp(c->arg, "start", 5)) || \
-                                (!strncasecmp(c->arg, "lock", 4)) ){
-		//(!strncasecmp(c->arg, "set", 3)) || \
-        type = NEED_MASTER;
-        dirty = 1;
-    }
-
-    if( (c->comno == COM_CREATE_DB) || (c->comno == COM_DROP_DB) ){
-        type = NEED_MASTER;
-    }
-
-    if(c->comno == COM_QUERY){
-        if(!strncasecmp(c->arg, "select", 6)){
-            type = NEED_SLAVE;
-        } else {
-            type = NEED_MASTER;
-        }
-    }
-
-	//下面为了选一个合适的连接，虽然当前分配了，但可能需要切换
-    if(myrole == UNAVAIL_ROLE){
-        if(type == NEED_MASTER){
-            if( (my = my_master_conn_get(c, cli->ip, cli->port)) == NULL ){
-                return -1;
-            } else {
-                c->my = my;
-            }
-        } else {
-            if( (my = my_slave_conn_get(c, cli->ip, cli->port)) == NULL ){
-                if( (my = my_master_conn_get(c, cli->ip, cli->port)) == NULL ){
-                    return -1;
-                } else {
-                    c->my = my;
-                }
-            } else {
-                c->my = my;
-            }
-        }
-    } else if(myrole == MASTER_ROLE) {
-        if(type == NEED_SLAVE) {
-            if( (my = my_slave_conn_get(c, cli->ip, cli->port)) != NULL ){
-                my_conn_put(c->my);
-                c->my = my;
-            }
-        }
-    } else {
-        if(type == NEED_MASTER){
-            if( (my = my_master_conn_get(c, cli->ip, cli->port)) != NULL ){
-                my_conn_put(c->my);
-                c->my = my;
-            } else {
-                return -1;
-            }
-        }
-    }
+	if( (my = my_slave_conn_get(c, cli->ip, cli->port)) == NULL ){
+		return -1;
+	} else {
+		c->my = my;
+	}
 
     if(dirty){
         my_conn_ctx_set_dirty(my);

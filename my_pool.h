@@ -7,11 +7,6 @@
 #include "my_buf.h"
 #include "def.h"
 
-enum{
-    UNAVAIL_ROLE = 0,
-    MASTER_ROLE,
-    SLAVE_ROLE,
-};
 
 typedef struct{
     uint8_t dirty;
@@ -51,27 +46,25 @@ typedef struct{
     struct list_head ping_head;
     my_info_t *info;
     int avail_count;//这个机器的可用mysql连接数目
-    int role;//SLAVE_ROLE还是master
     int closing;
+	int role ;
     time_t closing_time;
 } my_node_t;
 
 typedef struct{
-    my_node_t master[MAX_MASTER_NODE];
+    //my_node_t master[MAX_MASTER_NODE];
     my_node_t slave[MAX_SLAVE_NODE];
     int slave_num;
-    int master_num;
+    //int master_num;
 } my_pool_t;
 
 int my_pool_init(int count);
 int my_pool_have_conn(void);
 
-int my_master_reg(char *host, char *srv, char *user, char *pass, int count);
 int my_slave_reg(char *host, char *srv, char *user, char *pass, int count);
 
 int my_unreg(char *host, char *srv);
 
-my_conn_t *my_master_conn_get(void *c, uint32_t ip, uint16_t port);
 my_conn_t *my_slave_conn_get(void *c, uint32_t ip, uint16_t port);
 
 int my_conn_put(my_conn_t *my);

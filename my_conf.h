@@ -33,9 +33,9 @@ typedef struct{
 }my_node_conf_t;
 
 typedef struct{
-    int mcount;
+//    int mcount;
     int scount;
-    my_node_conf_t master[1];
+//    my_node_conf_t master[1];
     my_node_conf_t slave[64];
 }my_conf_t;
 

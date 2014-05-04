@@ -153,7 +153,7 @@ static int my_node_init(my_node_t *n)
 
     n->info = &myinfo;
     n->avail_count = 0;
-    n->role = UNAVAIL_ROLE;
+    n->role = 0;
     n->closing = 0;
     n->closing_time = 0;
 
@@ -221,7 +221,6 @@ int my_pool_init(int count)
     }
 
     mypool->slave_num = 0;
-    mypool->master_num = 0;
 
     res = timer_register(my_conn_dead_reconnect_timer, 9, "my_conn_dead_reconnect_timer", 1);
     if(res < 0){
@@ -333,46 +332,6 @@ static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pas
 }
 
 /*
- * fun: register master mysql
- * arg: host, srv, user, pass, connection number
- * ret: success 0, error -1
- *
- */
-
-int my_master_reg(char *host, char *srv, char *user, char *pass, int count)
-{//处理一下master的信息，并且进一步进行连接
-    int i, res = 0;
-    my_node_t *node;
-
-    for(i = 0; i < MAX_MASTER_NODE; i++){
-        node = &(mypool->master[i]);
-        if(node->role == UNAVAIL_ROLE){//找一个空地方，用来放字段
-            break;
-        }
-    }
-
-    if(i == MAX_MASTER_NODE){
-        log(g_log, "master number exceed limit[%d]\n", MAX_MASTER_NODE);
-        return -1;
-    }
-
-    if(i == mypool->master_num){
-        mypool->master_num++;
-    }
-
-    res = _my_reg(node, host, srv, user, pass, count);
-    if(res < 0){
-        log(g_log, "_my_reg error, res:%s\n", res);
-        return res;
-    }
-    node->role = MASTER_ROLE;
-
-    log(g_log, "host: %s, srv: %s, user: %s, cnum: %d\n", host, srv, user, count);
-
-    return res;
-}
-
-/*
  * fun: register slave mysql
  * arg: host, srv, user, pass, connection number
  * ret: success 0, error -1
@@ -386,7 +345,7 @@ int my_slave_reg(char *host, char *srv, char *user, char *pass, int count)
 
     for(i = 0; i < MAX_SLAVE_NODE; i++){
         node = &(mypool->slave[i]);//找一个空位置
-        if(node->role == UNAVAIL_ROLE){
+        if(node->role == 0){
             break;
         }
     }
@@ -405,7 +364,7 @@ int my_slave_reg(char *host, char *srv, char *user, char *pass, int count)
         log(g_log, "_my_reg error\n");
         return res;
     }
-    node->role = SLAVE_ROLE;
+    node->role = 1;
 
     log(g_log, "host: %s, srv: %s, user: %s, cnum: %d\n", host, srv, user, count);
 
@@ -453,15 +412,6 @@ int my_unreg(char *host, char *srv)
 
     log(g_log, "%s called\n", __func__);
 
-    for(i = 0; i < mypool->master_num; i++){
-        node = &(mypool->master[i]);
-        if((!strcmp(node->host, host)) && (!strcmp(node->srv, srv))){
-            my_node_set_closing(node);
-
-            log(g_log, "master %s:%s unregister\n", host, srv);
-        }
-    }
-
     for(i = 0; i < mypool->slave_num; i++){
         node = &(mypool->slave[i]);
         if((!strcmp(node->host, host)) && (!strcmp(node->srv, srv))){
@@ -472,45 +422,6 @@ int my_unreg(char *host, char *srv)
     }
 
     return 0;
-}
-
-/*
- * fun: get a master connection
- * arg: connection, client ip, client port
- * ret: success return mysql connection, error return NULL 
- *
- */
-
-my_conn_t *my_master_conn_get(void *c, uint32_t ip, uint16_t port)
-{
-    int i, index;
-    my_node_t *node;
-    my_conn_t *my;
-    struct list_head *head;
-
-    if(mypool->master_num == 0){
-        log(g_log, "no master register\n");
-        return NULL;
-    }
-
-    for(i = 0; i < mypool->master_num; i++){
-        index = ((ip + port) + i) % (mypool->master_num);
-        node = &(mypool->master[index]);
-        head = &(node->avail_head);
-        if( (!my_node_is_closing(node)) && (!list_empty(head)) ){
-            break;
-        }
-    }
-
-    if(i == mypool->master_num){
-        log(g_log, "no master available\n");
-        return NULL;
-    }
-
-    my = list_first_entry(head, my_conn_t, link);
-    my_conn_set_used(my, c);
-
-    return my;
 }
 
 /*
@@ -790,21 +701,6 @@ static int my_conn_dead_reconnect_timer(unsigned long arg)
     my_conn_t *my;
     struct list_head *head, *pos, *n;
 
-    for(i = 0; i < mypool->master_num; i++){
-        node = &(mypool->master[i]);
-        if(my_node_is_closing(node)){
-            continue;
-        }
-        head = &(node->dead_head);
-        list_for_each_safe(pos, n, head){
-            my = list_entry(pos, my_conn_t, link);
-            list_del_init(pos);
-            if( (res = make_my_conn(my)) < 0 ){
-                log(g_log, "make_my_conn error\n");
-            }
-        }
-    }
-
     for(i = 0; i < mypool->slave_num; i++){
         node = &(mypool->slave[i]);
         if(my_node_is_closing(node)){
@@ -836,25 +732,6 @@ static int my_conn_fail_reconnect_timer(unsigned long arg)
     my_node_t *node;
     my_conn_t *my;
     struct list_head *head, *pos, *n;
-
-    for(i = 0; i < mypool->master_num; i++){
-        count = 0;
-        node = &(mypool->master[i]);
-        if(my_node_is_closing(node)){
-            continue;
-        }
-        head = &(node->fail_head);
-        list_for_each_safe(pos, n, head){
-            if(count++ >= arg){
-                break;
-            }
-            my = list_entry(pos, my_conn_t, link);
-            list_del_init(pos);
-            if( (res = make_my_conn(my)) < 0 ){
-                log(g_log, "make_my_conn error\n");
-            }
-        }
-    }
 
     for(i = 0; i < mypool->slave_num; i++){
         count = 0;
@@ -892,55 +769,6 @@ static int my_conn_pool_status_timer(unsigned long arg)
     my_conn_t *my;
     struct list_head *head, *pos, *n;
     conn_t *c;
-
-    for(i = 0; i < mypool->master_num; i++){
-        count1 = count2 = count3 = count4 = count5 = count6 = 0;
-        node = &(mypool->master[i]);
-        if(my_node_is_closing(node)){
-            continue;
-        }
-
-        head = &(node->used_head);
-        list_for_each_safe(pos, n, head){
-            my = list_entry(pos, my_conn_t, link);
-            c = my->conn;
-            if(c != NULL){
-                debug(g_log, "connid: %d\n", c->connid);
-            } else {
-                debug(g_log, "no connect attach\n");
-            }
-            count1++;
-        }
-
-        head = &(node->avail_head);
-        list_for_each_safe(pos, n, head){
-            count2++;
-        }
-
-        head = &(node->dead_head);
-        list_for_each_safe(pos, n, head){
-            count3++;
-        }
-
-        head = &(node->raw_head);
-        list_for_each_safe(pos, n, head){
-            count4++;
-        }
-
-        head = &(node->fail_head);
-        list_for_each_safe(pos, n, head){
-            count5++;
-        }
-
-        head = &(node->ping_head);
-        list_for_each_safe(pos, n, head){
-            count6++;
-        }
-
-        log(g_log, \
-            "master %s:%s used,%d free,%d dead,%d raw,%d fail,%d ping,%d\n", \
-                   node->host, node->srv, count1, count2, count3, count4, count5, count6);
-    }
 
     for(i = 0; i < mypool->slave_num; i++){
         count1 = count2 = count3 = count4 = count5 = count6 = 0;
@@ -1008,26 +836,6 @@ static int my_conn_pool_ping_timer(unsigned long arg)
     my_conn_t *my;
     struct list_head *head, *pos, *n;
 
-    for(i = 0; i < mypool->master_num; i++){
-        count = 0;
-        node = &(mypool->master[i]);
-        if(my_node_is_closing(node)){
-            continue;
-        }
-        head = &(node->avail_head);//这里最好还是判断一下上次交互时间比较好，避免不必要的ping
-        list_for_each_safe(pos, n, head){
-            if(count++ >= arg){
-                break;
-            }
-            my = list_entry(pos, my_conn_t, link);
-            if( (res = my_conn_set_ping(my)) < 0 ){
-                log(g_log, "my_conn_set_ping error\n");
-            }
-
-            my_ping_prepare(my);
-        }
-    }
-
     for(i = 0; i < mypool->slave_num; i++){
         count = 0;
         node = &(mypool->slave[i]);
@@ -1065,27 +873,6 @@ static int my_conn_pool_ping_timeout_timer(unsigned long arg)
     my_conn_t *my;
     struct list_head *head, *pos, *n;
     time_t now = time(NULL);
-
-    for(i = 0; i < mypool->master_num; i++){
-        count = 0;
-        node = &(mypool->master[i]);
-        if(my_node_is_closing(node)){
-            continue;
-        }
-        head = &(node->ping_head);
-        list_for_each_safe(pos, n, head){
-            if(count++ >= arg){
-                break;
-            }
-            my = list_entry(pos, my_conn_t, link);
-
-            if(now - my->state_time > g_conf.mysql_ping_timeout){
-                my_conn_close_on_fail(my);
-            } else {
-                break;
-            }
-        }
-    }
 
     for(i = 0; i < mypool->slave_num; i++){
         count = 0;
@@ -1163,7 +950,7 @@ static int my_node_closing_cleanup(my_node_t *node)
         my_conn_close_and_release(my);
     }
 
-    node->role = UNAVAIL_ROLE;
+    node->role = 0;
 
     return 0;
 }
@@ -1181,23 +968,11 @@ static int my_node_closing_cleanup_timer(unsigned long arg)
     my_node_t *node;
     time_t now = time(NULL);
 
-    num = mypool->master_num;
-    for(i = 0; i < num; i++){
-        node = &(mypool->master[i]);
-        if( (my_node_is_closing(node)) && \
-            (node->role != UNAVAIL_ROLE) && \
-            (now - node->closing_time > MY_NODE_CLOSING_DELAY) ){
-            my_node_closing_cleanup(node);
-            log(g_log, "master %s:%s connection cleanup\n", \
-                                                node->host, node->srv);
-        }
-    }
-
     num = mypool->slave_num;
     for(i = 0; i < mypool->slave_num; i++){
         node = &(mypool->slave[i]);
         if( (my_node_is_closing(node)) && \
-            (node->role != UNAVAIL_ROLE) && \
+            (node->role != 0) && \
             (now - node->closing_time > MY_NODE_CLOSING_DELAY) ){
             my_node_closing_cleanup(node);
             log(g_log, "slave %s:%s connection cleanup\n", \
@@ -1249,13 +1024,6 @@ int my_pool_have_conn(void)
 {//这里其实是说服务器有没有跟mysql直接的可用连接 
     int i;
     my_node_t *node;
-
-    for(i = 0; i < mypool->master_num; i++){
-        node = &(mypool->master[i]);
-        if(node->avail_count > 0){
-            return 1;
-        }
-    }
 
     for(i = 0; i < mypool->slave_num; i++){
         node = &(mypool->slave[i]);

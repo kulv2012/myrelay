@@ -73,22 +73,11 @@ int mysql_conf_parse(const char *conf, my_conf_t *myconf)
     char buf[MAX_LINE_LEN];
     char type[64], host[128], port[128], user[64], pass[64];
     int  cnum;
-    int  mcount = 0, scount = 0;
+    int  scount = 0;
 
     my_node_conf_t *mynode;
 
-    myconf->mcount = 0;
     myconf->scount = 0;
-
-    for(i = 0; i < 1; i++){
-        mynode = myconf->master + i;
-        bzero(mynode->host, sizeof(mynode->host));
-        bzero(mynode->port, sizeof(mynode->port));
-        bzero(mynode->user, sizeof(mynode->user));
-        bzero(mynode->pass, sizeof(mynode->pass));
-
-        mynode->cnum = 0;
-    }
 
     for(i = 0; i < 64; i++){
         mynode = myconf->slave + i;
@@ -113,13 +102,7 @@ int mysql_conf_parse(const char *conf, my_conf_t *myconf)
             res = sscanf(buf, "%s %s %s %s %s %d", \
                             type, host, port, user, pass, &cnum);
             if(res == 6){
-                if(!strcmp(type, "master")){
-                    if(mcount >= 1){
-                        log(g_log, "line[%d] error, master num limit\n", line);
-                        return -1;
-                    }
-                    mynode = &(myconf->master[mcount++]);
-                } else if(!strcmp(type, "slave")) {
+                if(!strcmp(type, "slave")) {
                     if(scount >= 64){
                         log(g_log, "line[%d] error, slave num limit\n", line);
                         return -1;
@@ -144,7 +127,6 @@ int mysql_conf_parse(const char *conf, my_conf_t *myconf)
     }
 
     fclose(fp);
-    myconf->mcount = mcount;
     myconf->scount = scount;
 
     return 0;

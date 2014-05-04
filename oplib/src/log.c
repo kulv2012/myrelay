@@ -191,6 +191,7 @@ static int log_doit(log_t *log, int level, int flag, const char *file, int line,
         return n;
     }
 
+	/*
     if(t > last){
         last = t;
         i1 = log->statbuf.st_ino;
@@ -243,7 +244,7 @@ static int log_doit(log_t *log, int level, int flag, const char *file, int line,
             }
         }
 
-    }
+    }*/
 
     return n;
 }

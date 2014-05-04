@@ -7,13 +7,6 @@
 #include "my_buf.h"
 
 enum{
-    NEED_UNAVAIL = 0,
-    NEED_MASTER,
-    NEED_SLAVE,
-    NEED_MASTER_OR_SLAVE
-};
-
-enum{
     STATE_UNAVAIL = 0,
     STATE_AUTH_FAIL,
     STATE_AUTH_SUCCESS,

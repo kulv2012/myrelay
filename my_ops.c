@@ -285,7 +285,6 @@ int cli_hs_stage1_prepare(conn_t *c)
     } else {
         debug(g_log, "conn:%u conn_alloc_my_conn success\n", c->connid);
     }
-
     my = c->my;
     node = my->node;
     info = node->info;
@@ -674,7 +673,7 @@ int cli_query_cb(int fd, void *arg)
                 }
 
                 my = c->my;
-                if(strcmp(my->ctx.curdb, c->curdb)){//还需要给服务器发送切换数据库的命令 
+                if(c->curdb != NULL && strcmp(my->ctx.curdb, c->curdb)){//还需要给服务器发送切换数据库的命令 
                     if( (res = my_use_db_prepare(c)) < 0 ){
                         log(g_log, "conn:%u my_use_db_prepare error\n", c->connid);
                         goto end;

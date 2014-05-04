@@ -122,15 +122,6 @@ int work(int fd)
         log(g_log, "mysql_conf_parse %s error\n", g_conf.mysql_conf);
     }
 
-    // mysql register
-    for(i = 0; i < myconf_cur.mcount; i++){//连接master
-        mynode = &(myconf_cur.master[i]);
-        res = my_master_reg(mynode->host, mynode->port, mynode->user, mynode->pass, mynode->cnum);
-        if(res < 0){
-            log(g_log, "my_master_reg error\n");
-        }
-    }
-
     for(i = 0; i < myconf_cur.scount; i++){//提前连接slave
         mynode = &(myconf_cur.slave[i]);
         res = my_slave_reg(mynode->host, mynode->port, mynode->user, mynode->pass, mynode->cnum);
@@ -179,7 +170,7 @@ static int accept_client_cb(int listenfd, void *arg)
 
     debug(g_log, "accept_client_cb callback\n");
 
-    while(1){
+    while(1){//一次接收完所有客户端
         if(!my_pool_have_conn()){//如果没有足够的mysql连接了，不接受这个accept，也就不会接收accept这个客户端连接。
 			//其实这个完全可以在验证成功后再做，不然容易被攻击。
             debug(g_log, "mysql pool is empty, waiting\n");
@@ -209,12 +200,12 @@ static int accept_client_cb(int listenfd, void *arg)
             debug(g_log, "conn:%d connection alloc success\n", c->connid);
         }
 
-        log(g_log, "conn:%d client[%s:%d] connection accept\n", c->connid, inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
 
         if( (res = cli_hs_stage1_prepare(c)) < 0 ){
             log(g_log, "conn:%d cli_hs_sate1_prepare error, close connection\n", c->connid);
             conn_close(c);
         }
+        log(g_log, "conn:%d client[%s:%d] connection accept\n", c->connid, inet_ntoa(cliaddr.sin_addr), ntohs(cliaddr.sin_port));
     }
 
     return 0;
@@ -246,21 +237,6 @@ static int usr1_reload(void)
         return -1;
     }
 
-    for(i = 0; i < myconf_cur.mcount; i++){
-        cur = &(myconf_cur.master[i]);
-        for(j = 0; j < myconf_new.mcount; j++){
-            new = &(myconf_new.master[j]);
-            if((!strcmp(new->host, cur->host)) && \
-                                (!strcmp(new->port, cur->port))){
-                break;
-            }
-        }
-
-        if(j == myconf_new.mcount){
-            my_unreg(cur->host, cur->port);
-        }
-    }
-
     for(i = 0; i < myconf_cur.scount; i++){
         cur = &(myconf_cur.slave[i]);
         for(j = 0; j < myconf_new.scount; j++){
@@ -273,22 +249,6 @@ static int usr1_reload(void)
 
         if(j == myconf_new.scount){
             my_unreg(cur->host, cur->port);
-        }
-    }
-
-    for(i = 0; i < myconf_new.mcount; i++){
-        new = &(myconf_new.master[i]);
-        for(j = 0; j < myconf_cur.mcount; j++){
-            cur = &(myconf_cur.master[j]);
-            if((!strcmp(new->host, cur->host)) && \
-                                (!strcmp(new->port, cur->port))){
-                break;
-            }
-        }
-
-        if(j == myconf_cur.mcount){
-            my_master_reg(new->host, new->port, new->user, \
-                                            new->pass, new->cnum);
         }
     }
 
