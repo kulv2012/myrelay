@@ -568,7 +568,7 @@ int cli_query_cb(int fd, void *arg)
     my_conn_t *my;
     cli_com_t com;
 
-    debug(g_log, "%s called\n", __func__);
+    debug(g_log, "%s called, fd:%d\n", __func__, fd);
 
     cli = (cli_conn_t *)arg;
     c = cli->conn;
@@ -667,10 +667,10 @@ int cli_query_cb(int fd, void *arg)
                 log(g_log, "drop db\n");
             case COM_QUERY:
 				//下面为了选一个合适的连接，虽然当前分配了，但可能需要切换主从
-                if( (res = conn_alloc_my_conn(c)) < 0 ){ 
+                /*if( (res = conn_alloc_my_conn(c)) < 0 ){ 
                     log(g_log, "conn:%u alloc mysql conn error\n", c->connid);
                     goto end;
-                }
+                }*/
 
                 my = c->my;
                 if(c->curdb != NULL && strcmp(my->ctx.curdb, c->curdb)){//还需要给服务器发送切换数据库的命令 
@@ -914,8 +914,9 @@ AGAIN:
         } else {
             return n;
         }
-    } else if(n == 0) {
-        return n;
+    } else if(n == 0) {//zero indicates end of file
+		info(g_log, "my_real_read failed, fd:%d, ret:%d, errno:%d, errmsg:%s\n", fd, n, errno, strerror(errno)) ;
+        return -1;
     } else {
         buf->used += n;
         buf->pos += n;

@@ -124,7 +124,7 @@ int work(int fd)
 
     for(i = 0; i < myconf_cur.scount; i++){//提前连接slave
         mynode = &(myconf_cur.slave[i]);
-        res = my_slave_reg(mynode->host, mynode->port, mynode->user, mynode->pass, mynode->cnum);
+        res = my_slave_reg(mynode->host, mynode->port, mynode->user, mynode->pass, mynode->cnum, mynode->maxnum );
         if(res < 0){
             log(g_log, "my_slave_reg error\n");
         }
@@ -173,7 +173,9 @@ static int accept_client_cb(int listenfd, void *arg)
     while(1){//一次接收完所有客户端
         if(!my_pool_have_conn()){//如果没有足够的mysql连接了，不接受这个accept，也就不会接收accept这个客户端连接。
 			//其实这个完全可以在验证成功后再做，不然容易被攻击。
-            debug(g_log, "mysql pool is empty, waiting\n");
+			//尝试创建新的连接。
+			int tmpres = my_try_increase_connection() ;//由于这里实惠预先分配的机制，也就是，就算待会没有新人了，也会创建一个连接
+            debug(g_log, "mysql pool is empty, my_try_increase_connection res[%d], waiting\n", tmpres);
             break;
         }
         clen = sizeof(cliaddr);
@@ -263,8 +265,7 @@ static int usr1_reload(void)
         }
 
         if(j == myconf_cur.scount){
-            my_slave_reg(new->host, new->port, new->user, \
-                                            new->pass, new->cnum);
+            my_slave_reg(new->host, new->port, new->user, new->pass, new->cnum, new->maxnum);
         }
     }
 

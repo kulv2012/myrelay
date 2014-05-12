@@ -72,7 +72,7 @@ int mysql_conf_parse(const char *conf, my_conf_t *myconf)
     FILE *fp;
     char buf[MAX_LINE_LEN];
     char type[64], host[128], port[128], user[64], pass[64];
-    int  cnum;
+    int  cnum, maxnum;
     int  scount = 0;
 
     my_node_conf_t *mynode;
@@ -87,6 +87,7 @@ int mysql_conf_parse(const char *conf, my_conf_t *myconf)
         bzero(mynode->pass, sizeof(mynode->pass));
 
         mynode->cnum = 0;
+        mynode->maxnum = 0;
     }
 
     if( (fp = fopen(conf, "r")) == NULL ){
@@ -99,9 +100,8 @@ int mysql_conf_parse(const char *conf, my_conf_t *myconf)
         line++;
         trim(buf);
         if( (*buf != '#') && (*buf != '\0') ){
-            res = sscanf(buf, "%s %s %s %s %s %d", \
-                            type, host, port, user, pass, &cnum);
-            if(res == 6){
+            res = sscanf(buf, "%s %s %s %s %s %d %d", type, host, port, user, pass, &cnum, &maxnum);
+            if(res == 7){
                 if(!strcmp(type, "slave")) {
                     if(scount >= 64){
                         log(g_log, "line[%d] error, slave num limit\n", line);
@@ -118,6 +118,7 @@ int mysql_conf_parse(const char *conf, my_conf_t *myconf)
                 strncpy(mynode->user, user, sizeof(mynode->user) - 1);
                 strncpy(mynode->pass, pass, sizeof(mynode->pass) - 1);
                 mynode->cnum = cnum;
+                mynode->maxnum = maxnum;
             } else {
                 log(g_log, "line[%d] error\n", line);
                 return -1;

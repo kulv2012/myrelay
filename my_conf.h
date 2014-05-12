@@ -30,13 +30,14 @@ typedef struct{
     char user[16];
     char pass[64];
     int  cnum;
+    int  maxnum;//连接的最大数目
 }my_node_conf_t;
 
 typedef struct{
 //    int mcount;
-    int scount;
 //    my_node_conf_t master[1];
-    my_node_conf_t slave[64];
+    int scount;
+    my_node_conf_t slave[64];//slave的机器数目
 }my_conf_t;
 
 struct conf_t{

@@ -45,10 +45,14 @@ typedef struct{
     struct list_head fail_head;
     struct list_head ping_head;
     my_info_t *info;
-    int avail_count;//这个机器的可用mysql连接数目
+    unsigned int avail_count;//这个机器的可用mysql连接数目
     int closing;
 	int role ;
     time_t closing_time;
+
+	int curall_connection ;//当前的连接数，包括活的，死的
+	int min_connection ;//初始申请的连接数目
+	int max_connection ;//最大连接数
 } my_node_t;
 
 typedef struct{
@@ -61,7 +65,7 @@ typedef struct{
 int my_pool_init(int count);
 int my_pool_have_conn(void);
 
-int my_slave_reg(char *host, char *srv, char *user, char *pass, int count);
+int my_slave_reg(char *host, char *srv, char *user, char *pass, int mincount, int maxcount);
 
 int my_unreg(char *host, char *srv);
 
@@ -76,7 +80,8 @@ int my_conn_set_avail(my_conn_t *my);
 int my_conn_ctx_set_dirty(my_conn_t *my);
 int my_conn_ctx_is_dirty(my_conn_t *my);
 
-int my_info_set(uint8_t prot, uint8_t lang, uint16_t status, \
-                            uint32_t cap, char *ver, int ver_len);
+int my_info_set(uint8_t prot, uint8_t lang, uint16_t status, uint32_t cap, char *ver, int ver_len);
+
+int my_try_increase_connection( ) ;
 
 #endif

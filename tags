@@ -14,7 +14,7 @@ BLOB_FLAG	mysql_com.h	86;"	d
 BUFFSIZE	oplib/src/log.c	21;"	d	file:
 CC	Makefile	/^CC = gcc$/;"	m
 CC	oplib/src/Makefile	/^CC = gcc$/;"	m
-CFLAGS	Makefile	/^CFLAGS = -g -I .\/oplib\/include\/$/;"	m
+CFLAGS	Makefile	/^CFLAGS = -g -I .\/oplib\/include\/ -lpthread$/;"	m
 CFLAGS	oplib/src/Makefile	/^CFLAGS = -I ..\/include\/ -g -fPIC$/;"	m
 CLIENT_ALL_FLAGS	mysql_com.h	152;"	d
 CLIENT_BASIC_FLAGS	mysql_com.h	178;"	d
@@ -39,7 +39,7 @@ CLIENT_SECURE_CONNECTION	mysql_com.h	144;"	d
 CLIENT_SSL	mysql_com.h	140;"	d
 CLIENT_SSL_VERIFY_SERVER_CERT	mysql_com.h	148;"	d
 CLIENT_TRANSACTIONS	mysql_com.h	142;"	d
-CLI_COM_IGNORE_OK_PKT_SIZE	my_ops.c	1074;"	d	file:
+CLI_COM_IGNORE_OK_PKT_SIZE	my_ops.c	1026;"	d	file:
 COM_BINLOG_DUMP	mysql_com.h	/^  COM_TIME, COM_DELAYED_INSERT, COM_CHANGE_USER, COM_BINLOG_DUMP,$/;"	e	enum:enum_server_command
 COM_CHANGE_USER	mysql_com.h	/^  COM_TIME, COM_DELAYED_INSERT, COM_CHANGE_USER, COM_BINLOG_DUMP,$/;"	e	enum:enum_server_command
 COM_CONNECT	mysql_com.h	/^  COM_PROCESS_INFO, COM_CONNECT, COM_PROCESS_KILL, COM_DEBUG, COM_PING,$/;"	e	enum:enum_server_command
@@ -136,20 +136,19 @@ LIST_HEAD	oplib/include/list.h	20;"	d
 LIST_HEAD_INIT	oplib/include/list.h	18;"	d
 LOCAL_HOST	mysql_com.h	41;"	d
 LOCAL_HOST_NAMEDPIPE	mysql_com.h	42;"	d
-LOG_LEVEL_DEBUG	oplib/include/log.h	/^    LOG_LEVEL_DEBUG,$/;"	e	enum:__anon17
-LOG_LEVEL_ERR	oplib/include/log.h	/^    LOG_LEVEL_ERR,$/;"	e	enum:__anon17
-LOG_LEVEL_INFO	oplib/include/log.h	/^    LOG_LEVEL_INFO$/;"	e	enum:__anon17
-LOG_LEVEL_LOG	oplib/include/log.h	/^    LOG_LEVEL_LOG,$/;"	e	enum:__anon17
-LOG_NONE	oplib/include/log.h	/^    LOG_NONE = 0,$/;"	e	enum:__anon17
-LOG_WITHOUT_STRERROR	oplib/include/log.h	/^    LOG_WITHOUT_STRERROR = 0,$/;"	e	enum:__anon16
-LOG_WITH_STRERROR	oplib/include/log.h	/^    LOG_WITH_STRERROR$/;"	e	enum:__anon16
+LOG_LEVEL_DEBUG	oplib/include/log.h	/^    LOG_LEVEL_DEBUG$/;"	e	enum:__anon15
+LOG_LEVEL_ERR	oplib/include/log.h	/^    LOG_LEVEL_ERR,$/;"	e	enum:__anon15
+LOG_LEVEL_INFO	oplib/include/log.h	/^    LOG_LEVEL_INFO,$/;"	e	enum:__anon15
+LOG_LEVEL_LOG	oplib/include/log.h	/^    LOG_LEVEL_LOG,$/;"	e	enum:__anon15
+LOG_NONE	oplib/include/log.h	/^    LOG_NONE = 0,$/;"	e	enum:__anon15
+LOG_WITHOUT_STRERROR	oplib/include/log.h	/^    LOG_WITHOUT_STRERROR = 0,$/;"	e	enum:__anon14
+LOG_WITH_STRERROR	oplib/include/log.h	/^    LOG_WITH_STRERROR$/;"	e	enum:__anon14
 Length	sha1.h	/^  uint64_t Length;		\/* Message length in bits      *\/$/;"	m	struct:SHA1_CONTEXT
 MAGICNUM	oplib/src/genpool.c	21;"	d	file:
-MASTER_ROLE	my_pool.h	/^    MASTER_ROLE,$/;"	e	enum:__anon1
 MAX_BIGINT_WIDTH	mysql_com.h	242;"	d
 MAX_BLOB_WIDTH	mysql_com.h	244;"	d
 MAX_CHAR_WIDTH	mysql_com.h	243;"	d
-MAX_EVENT	oplib/src/handler.c	19;"	d	file:
+MAX_EVENT	oplib/include/handler.h	19;"	d
 MAX_FREE_CHUNKS	oplib/src/genpool.c	24;"	d	file:
 MAX_FUNC_MAP	oplib/src/timer.c	23;"	d	file:
 MAX_HASH_BUCKET	oplib/src/conf.c	21;"	d	file:
@@ -209,10 +208,6 @@ Message_Block	sha1.h	/^  uint8_t Message_Block[64];	\/* 512-bit message blocks  
 Message_Block_Index	sha1.h	/^  int16_t Message_Block_Index;	\/* Index into message block array   *\/$/;"	m	struct:SHA1_CONTEXT
 NAME_CHAR_LEN	mysql_com.h	25;"	d
 NAME_LEN	mysql_com.h	27;"	d
-NEED_MASTER	conn_pool.h	/^    NEED_MASTER,$/;"	e	enum:__anon7
-NEED_MASTER_OR_SLAVE	conn_pool.h	/^    NEED_MASTER_OR_SLAVE$/;"	e	enum:__anon7
-NEED_SLAVE	conn_pool.h	/^    NEED_SLAVE,$/;"	e	enum:__anon7
-NEED_UNAVAIL	conn_pool.h	/^    NEED_UNAVAIL = 0,$/;"	e	enum:__anon7
 NET_READ_TIMEOUT	mysql_com.h	228;"	d
 NET_WAIT_TIMEOUT	mysql_com.h	230;"	d
 NET_WRITE_TIMEOUT	mysql_com.h	229;"	d
@@ -220,7 +215,7 @@ NOT_NULL_FLAG	mysql_com.h	82;"	d
 NO_DEFAULT_VALUE_FLAG	mysql_com.h	96;"	d
 NUM_FLAG	mysql_com.h	98;"	d
 OBJECT	Makefile	/^OBJECT = cli_pool.o conn_pool.o main.o my_buf.o my_ops.o my_pool.o work.o my_protocol.o sqldump.o passwd.o sha1.o my_conf.o$/;"	m
-OBJECT	oplib/src/Makefile	/^OBJECT = common.o conf.o dict.o genpool.o handler.o hash.o iprange.o log.o md5.o sock.o timer.o libop.a$/;"	m
+OBJECT	oplib/src/Makefile	/^OBJECT = common.o conf.o dict.o genpool.o handler.o hash.o iprange.o log.o md5.o sock.o timer.o$/;"	m
 ONLY_KILL_QUERY	mysql_com.h	232;"	d
 ON_UPDATE_NOW_FLAG	mysql_com.h	97;"	d
 PAGES_PER_CHUNK	oplib/src/genpool.c	23;"	d	file:
@@ -299,19 +294,17 @@ SHUTDOWN_WAIT_CONNECTIONS	mysql_com.h	/^  SHUTDOWN_WAIT_CONNECTIONS= MYSQL_SHUTD
 SHUTDOWN_WAIT_CRITICAL_BUFFERS	mysql_com.h	/^  SHUTDOWN_WAIT_CRITICAL_BUFFERS= (MYSQL_SHUTDOWN_KILLABLE_UPDATE << 1) + 1,$/;"	e	enum:mysql_enum_shutdown_level
 SHUTDOWN_WAIT_TRANSACTIONS	mysql_com.h	/^  SHUTDOWN_WAIT_TRANSACTIONS= MYSQL_SHUTDOWN_KILLABLE_TRANS,$/;"	e	enum:mysql_enum_shutdown_level
 SHUTDOWN_WAIT_UPDATES	mysql_com.h	/^  SHUTDOWN_WAIT_UPDATES= MYSQL_SHUTDOWN_KILLABLE_UPDATE,$/;"	e	enum:mysql_enum_shutdown_level
-SLAVE_ROLE	my_pool.h	/^    SLAVE_ROLE,$/;"	e	enum:__anon1
 SQLSTATE_LENGTH	mysql_com.h	31;"	d
-STATE_AUTH_FAIL	conn_pool.h	/^    STATE_AUTH_FAIL,$/;"	e	enum:__anon8
-STATE_AUTH_SUCCESS	conn_pool.h	/^    STATE_AUTH_SUCCESS,$/;"	e	enum:__anon8
-STATE_IDLE	conn_pool.h	/^    STATE_IDLE$/;"	e	enum:__anon8
-STATE_PREPARE_MYSQL	conn_pool.h	/^    STATE_PREPARE_MYSQL,$/;"	e	enum:__anon8
-STATE_READING_CLIENT	conn_pool.h	/^    STATE_READING_CLIENT,$/;"	e	enum:__anon8
-STATE_READ_MYSQL_WRITE_CLIENT	conn_pool.h	/^    STATE_READ_MYSQL_WRITE_CLIENT,$/;"	e	enum:__anon8
-STATE_UNAVAIL	conn_pool.h	/^    STATE_UNAVAIL = 0,$/;"	e	enum:__anon8
-STATE_WRITING_MYSQL	conn_pool.h	/^    STATE_WRITING_MYSQL,$/;"	e	enum:__anon8
+STATE_AUTH_FAIL	conn_pool.h	/^    STATE_AUTH_FAIL,$/;"	e	enum:__anon6
+STATE_AUTH_SUCCESS	conn_pool.h	/^    STATE_AUTH_SUCCESS,$/;"	e	enum:__anon6
+STATE_IDLE	conn_pool.h	/^    STATE_IDLE$/;"	e	enum:__anon6
+STATE_PREPARE_MYSQL	conn_pool.h	/^    STATE_PREPARE_MYSQL,$/;"	e	enum:__anon6
+STATE_READING_CLIENT	conn_pool.h	/^    STATE_READING_CLIENT,$/;"	e	enum:__anon6
+STATE_READ_MYSQL_WRITE_CLIENT	conn_pool.h	/^    STATE_READ_MYSQL_WRITE_CLIENT,$/;"	e	enum:__anon6
+STATE_UNAVAIL	conn_pool.h	/^    STATE_UNAVAIL = 0,$/;"	e	enum:__anon6
+STATE_WRITING_MYSQL	conn_pool.h	/^    STATE_WRITING_MYSQL,$/;"	e	enum:__anon6
 SYSTEM_CHARSET_MBMAXLEN	mysql_com.h	24;"	d
 TIMESTAMP_FLAG	mysql_com.h	94;"	d
-UNAVAIL_ROLE	my_pool.h	/^    UNAVAIL_ROLE = 0,$/;"	e	enum:__anon1
 UNIQUE_FLAG	mysql_com.h	101;"	d
 UNIQUE_KEY_FLAG	mysql_com.h	84;"	d
 UNSIGNED_FLAG	mysql_com.h	87;"	d
@@ -355,25 +348,25 @@ _ipblock	oplib/include/iprange.h	/^typedef struct _ipblock{$/;"	s
 _iprange_t	oplib/include/iprange.h	/^typedef struct _iprange_t{$/;"	s
 _log_t	oplib/include/log.h	/^typedef struct _log_t{$/;"	s
 _md5ctx	oplib/include/md5.h	/^typedef struct _md5ctx {$/;"	s
-_my_reg	my_pool.c	/^static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pass, int count)$/;"	f	file:
+_my_reg	my_pool.c	/^static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pass, int mincount, int maxcount )$/;"	f	file:
 _mysql_com_h	mysql_com.h	21;"	d
 _release_a_chunk	oplib/src/genpool.c	/^static int _release_a_chunk(genpool_handler_t *g, chunk_t *c)$/;"	f	file:
 accept_client	oplib/src/sock.c	/^inline int accept_client(int sockfd, struct sockaddr_in *cliaddr, socklen_t *len)$/;"	f
 accept_client_cb	work.c	/^static int accept_client_cb(int listenfd, void *arg)$/;"	f	file:
 add_handler	oplib/src/handler.c	/^int add_handler(int fd, uint32_t event, void *cb, void *arg)$/;"	f
-arg	conn_pool.h	/^    char arg[1024];$/;"	m	struct:__anon9
-arg	my_protocol.h	/^    char arg[4096];$/;"	m	struct:__anon14
-arg	oplib/src/handler.c	/^    void *arg;$/;"	m	struct:__anon20	file:
+arg	conn_pool.h	/^    char arg[1024];$/;"	m	struct:__anon7
+arg	my_protocol.h	/^    char arg[4096];$/;"	m	struct:__anon12
+arg	oplib/src/handler.c	/^    void *arg;$/;"	m	struct:__anon18	file:
 arg	oplib/src/timer.c	/^    unsigned long arg;$/;"	m	struct:timer_func_map	file:
 array	oplib/include/iprange.h	/^    ipblock *array;$/;"	m	struct:_iprange_t
 attr	oplib/include/dict.h	/^    unsigned long   attr;$/;"	m	struct:dict
-avail	my_pool.h	/^    int avail;$/;"	m	struct:__anon4
-avail_count	my_pool.h	/^    int avail_count;$/;"	m	struct:__anon5
-avail_head	my_pool.h	/^    struct list_head avail_head;$/;"	m	struct:__anon5	typeref:struct:__anon5::list_head
-belong_chunk	oplib/src/genpool.c	/^    chunk_t *belong_chunk;$/;"	m	struct:__anon19	file:
-buf	cli_pool.h	/^    buf_t buf;$/;"	m	struct:__anon10
-buf	conn_pool.h	/^    buf_t buf;$/;"	m	struct:__anon9
-buf	my_pool.h	/^    buf_t buf;$/;"	m	struct:__anon3
+avail	my_pool.h	/^    int avail;$/;"	m	struct:__anon3
+avail_count	my_pool.h	/^    int avail_count;\/\/这个机器的可用mysql连接数目$/;"	m	struct:__anon4
+avail_head	my_pool.h	/^    struct list_head avail_head;\/\/成功建立连接，并且空闲可用的mysql连接$/;"	m	struct:__anon4	typeref:struct:__anon4::list_head
+belong_chunk	oplib/src/genpool.c	/^    chunk_t *belong_chunk;$/;"	m	struct:__anon17	file:
+buf	cli_pool.h	/^    buf_t buf;$/;"	m	struct:__anon8
+buf	conn_pool.h	/^    buf_t buf;$/;"	m	struct:__anon7
+buf	my_pool.h	/^    buf_t buf;$/;"	m	struct:__anon2
 buf_init	my_buf.c	/^int buf_init(buf_t *buf)$/;"	f
 buf_realloc	my_buf.c	/^buf_t *buf_realloc(buf_t *buf, size_t size)$/;"	f
 buf_reset	my_buf.c	/^int buf_reset(buf_t *buf)$/;"	f
@@ -381,27 +374,27 @@ buf_rewind	my_buf.c	/^int buf_rewind(buf_t *buf)$/;"	f
 buf_t	my_buf.h	/^typedef struct buf_t{$/;"	s
 buf_t	my_buf.h	/^}buf_t;$/;"	t	typeref:struct:buf_t
 buffer	oplib/include/md5.h	/^	uint8_t buffer[64];$/;"	m	struct:_md5ctx
-callback	oplib/src/handler.c	/^    cb_func *callback;$/;"	m	struct:__anon20	file:
-cap	my_pool.h	/^    uint32_t cap;$/;"	m	struct:__anon4
-cap	my_protocol.h	/^    uint32_t cap;$/;"	m	struct:__anon11
+callback	oplib/src/handler.c	/^    cb_func *callback;$/;"	m	struct:__anon18	file:
+cap	my_pool.h	/^    uint32_t cap;$/;"	m	struct:__anon3
+cap	my_protocol.h	/^    uint32_t cap;$/;"	m	struct:__anon9
 cap_umask	my_ops.c	/^static uint32_t cap_umask = CLIENT_FOUND_ROWS | CLIENT_NO_SCHEMA | \\$/;"	v	file:
 cb_func	oplib/src/handler.c	/^typedef int (cb_func)(int fd, void *arg);$/;"	t	file:
-charset	my_protocol.h	/^    uint8_t charset;$/;"	m	struct:__anon12
-chunk_addr	oplib/src/genpool.c	/^    void *chunk_addr;$/;"	m	struct:__anon18	file:
-chunk_t	oplib/src/genpool.c	/^} chunk_t;$/;"	t	typeref:struct:__anon18	file:
-cli	conn_pool.h	/^    void *cli;$/;"	m	struct:__anon9
+charset	my_protocol.h	/^    uint8_t charset;$/;"	m	struct:__anon10
+chunk_addr	oplib/src/genpool.c	/^    void *chunk_addr;$/;"	m	struct:__anon16	file:
+chunk_t	oplib/src/genpool.c	/^} chunk_t;$/;"	t	typeref:struct:__anon16	file:
+cli	conn_pool.h	/^    void *cli;\/\/对应这个连接结构的客户端连接 $/;"	m	struct:__anon7
 cli_answer_cb	my_ops.c	/^int cli_answer_cb(int fd, void *arg)$/;"	f
-cli_auth_login_t	my_protocol.h	/^}cli_auth_login_t;$/;"	t	typeref:struct:__anon12
+cli_auth_login_t	my_protocol.h	/^}cli_auth_login_t;$/;"	t	typeref:struct:__anon10
 cli_com_forward	my_ops.c	/^static int cli_com_forward(conn_t *c)$/;"	f	file:
 cli_com_ignored	my_ops.c	/^static int cli_com_ignored(conn_t *c)$/;"	f	file:
 cli_com_ok_write_cb	my_ops.c	/^static int cli_com_ok_write_cb(int fd, void *arg)$/;"	f	file:
-cli_com_t	my_protocol.h	/^}cli_com_t;$/;"	t	typeref:struct:__anon14
+cli_com_t	my_protocol.h	/^}cli_com_t;$/;"	t	typeref:struct:__anon12
 cli_com_unsupported	my_ops.c	/^static int cli_com_unsupported(conn_t *c)$/;"	f	file:
 cli_conn_alloc	cli_pool.c	/^cli_conn_alloc(conn_t *conn, int fd, uint32_t ip, uint16_t port)$/;"	f	file:
 cli_conn_close	cli_pool.c	/^int cli_conn_close(cli_conn_t *conn)$/;"	f
 cli_conn_open	cli_pool.c	/^int cli_conn_open(conn_t *conn, int fd, uint32_t ip, uint16_t port)$/;"	f
 cli_conn_release	cli_pool.c	/^static int cli_conn_release(cli_conn_t *conn)$/;"	f	file:
-cli_conn_t	cli_pool.h	/^} cli_conn_t;$/;"	t	typeref:struct:__anon10
+cli_conn_t	cli_pool.h	/^} cli_conn_t;$/;"	t	typeref:struct:__anon8
 cli_hs_auth_fail_cb	my_ops.c	/^static int cli_hs_auth_fail_cb(int fd, void *arg)$/;"	f	file:
 cli_hs_stage1_cb	my_ops.c	/^int cli_hs_stage1_cb(int fd, void *arg)$/;"	f
 cli_hs_stage1_prepare	my_ops.c	/^int cli_hs_stage1_prepare(conn_t *c)$/;"	f
@@ -410,13 +403,13 @@ cli_hs_stage3_cb	my_ops.c	/^int cli_hs_stage3_cb(int fd, void *arg)$/;"	f
 cli_pool	cli_pool.c	/^static genpool_handler_t *cli_pool;$/;"	v	file:
 cli_pool_init	cli_pool.c	/^int cli_pool_init(int count)$/;"	f
 cli_query_cb	my_ops.c	/^int cli_query_cb(int fd, void *arg)$/;"	f
-client_flags	my_protocol.h	/^    uint32_t client_flags;$/;"	m	struct:__anon12
-closing	my_pool.h	/^    int closing;$/;"	m	struct:__anon5
-closing_time	my_pool.h	/^    time_t closing_time;$/;"	m	struct:__anon5
+client_flags	my_protocol.h	/^    uint32_t client_flags;$/;"	m	struct:__anon10
+closing	my_pool.h	/^    int closing;$/;"	m	struct:__anon4
+closing_time	my_pool.h	/^    time_t closing_time;$/;"	m	struct:__anon4
 cmp	oplib/include/dict.h	/^    int             (*cmp)(void *, void *);$/;"	m	struct:dict
-cnum	my_conf.h	/^    int  cnum;$/;"	m	struct:__anon21
-comno	conn_pool.h	/^    uint8_t comno;$/;"	m	struct:__anon9
-comno	my_protocol.h	/^    uint8_t comno;$/;"	m	struct:__anon14
+cnum	my_conf.h	/^    int  cnum;$/;"	m	struct:__anon19
+comno	conn_pool.h	/^    uint8_t comno;$/;"	m	struct:__anon7
+comno	my_protocol.h	/^    uint8_t comno;$/;"	m	struct:__anon12
 conf_def_daemon	my_conf.h	4;"	d
 conf_def_idle_timeout	my_conf.h	15;"	d
 conf_def_ip	my_conf.h	8;"	d
@@ -437,8 +430,8 @@ conf_def_write_mysql_timeout	my_conf.h	12;"	d
 conf_get	oplib/src/conf.c	/^static char *conf_get(const char *var)$/;"	f	file:
 conf_init	oplib/src/conf.c	/^int conf_init(const char *conf)$/;"	f
 conf_t	my_conf.h	/^struct conf_t{$/;"	s
-conn	cli_pool.h	/^    conn_t *conn;$/;"	m	struct:__anon10
-conn	my_pool.h	/^    void *conn;$/;"	m	struct:__anon3
+conn	cli_pool.h	/^    conn_t *conn;\/\/这个客户端连接对应的中间连接结构为conn_t, 这样可以进一步找到mysql连接$/;"	m	struct:__anon8
+conn	my_pool.h	/^    void *conn;$/;"	m	struct:__anon2
 conn_alloc	conn_pool.c	/^static conn_t *conn_alloc(void)$/;"	f	file:
 conn_alloc_my_conn	conn_pool.c	/^int conn_alloc_my_conn(conn_t *c)$/;"	f
 conn_close	conn_pool.c	/^int conn_close(conn_t *c)$/;"	f
@@ -453,18 +446,19 @@ conn_state_set_prepare_mysql	conn_pool.c	/^int conn_state_set_prepare_mysql(conn
 conn_state_set_read_mysql_write_client	conn_pool.c	/^int conn_state_set_read_mysql_write_client(conn_t *c)$/;"	f
 conn_state_set_reading_client	conn_pool.c	/^int conn_state_set_reading_client(conn_t *c)$/;"	f
 conn_state_set_writing_mysql	conn_pool.c	/^int conn_state_set_writing_mysql(conn_t *c)$/;"	f
-conn_t	conn_pool.h	/^} conn_t;$/;"	t	typeref:struct:__anon9
+conn_t	conn_pool.h	/^} conn_t;$/;"	t	typeref:struct:__anon7
 connect_nonblock	oplib/src/sock.c	/^inline int connect_nonblock(const char *host, const char *serv, int *flag)$/;"	f
 connid	conn_pool.c	/^static uint32_t connid;$/;"	v	file:
-connid	conn_pool.h	/^    uint32_t connid;$/;"	m	struct:__anon9
+connid	conn_pool.h	/^    uint32_t connid;$/;"	m	struct:__anon7
 container_of	oplib/include/list.h	221;"	d
 count	oplib/include/md5.h	/^	uint32_t count[2];$/;"	m	struct:_md5ctx
-ctx	my_pool.h	/^    my_ctx_t ctx;$/;"	m	struct:__anon3
-curdb	conn_pool.h	/^    char curdb[64];$/;"	m	struct:__anon9
-curdb	my_pool.h	/^    char curdb[64];$/;"	m	struct:__anon2
+ctx	my_pool.h	/^    my_ctx_t ctx;$/;"	m	struct:__anon2
+curall_connection	my_pool.h	/^	int curall_connection ;\/\/当前的连接数，包括活的，死的$/;"	m	struct:__anon4
+curdb	conn_pool.h	/^    char curdb[64];$/;"	m	struct:__anon7
+curdb	my_pool.h	/^    char curdb[64];$/;"	m	struct:__anon1
 daemon	my_conf.h	/^    int daemon;$/;"	m	struct:conf_t
-db	my_protocol.h	/^    char db[128];$/;"	m	struct:__anon12
-dead_head	my_pool.h	/^    struct list_head dead_head;$/;"	m	struct:__anon5	typeref:struct:__anon5::list_head
+db	my_protocol.h	/^    char db[128];$/;"	m	struct:__anon10
+dead_head	my_pool.h	/^    struct list_head dead_head;$/;"	m	struct:__anon4	typeref:struct:__anon4::list_head
 debug	oplib/include/log.h	39;"	d
 del_handler	oplib/src/handler.c	/^int del_handler(int fd)$/;"	f
 dict	oplib/include/dict.h	/^typedef struct dict{$/;"	s
@@ -476,7 +470,7 @@ dict_search	oplib/src/dict.c	/^void *dict_search(dict_t *op, void *var)$/;"	f
 dict_setcmp	oplib/src/dict.c	/^int dict_setcmp(dict_t *op, int (*cmp)(void *, void *))$/;"	f
 dict_setsign	oplib/src/dict.c	/^int dict_setsign(dict_t *op, unsigned long (*sign)(void *))$/;"	f
 dict_t	oplib/include/dict.h	/^} dict_t;$/;"	t	typeref:struct:dict
-dirty	my_pool.h	/^    uint8_t dirty;$/;"	m	struct:__anon2
+dirty	my_pool.h	/^    uint8_t dirty;$/;"	m	struct:__anon1
 ditem	oplib/include/dict.h	/^typedef struct ditem{$/;"	s
 ditem_t	oplib/include/dict.h	/^} ditem_t;$/;"	t	typeref:struct:ditem
 enum_cursor_type	mysql_com.h	/^enum enum_cursor_type$/;"	g
@@ -485,26 +479,27 @@ enum_mysql_set_option	mysql_com.h	/^enum enum_mysql_set_option$/;"	g
 enum_server_command	mysql_com.h	/^enum enum_server_command$/;"	g
 epfd	oplib/src/handler.c	/^static int epfd;$/;"	v	file:
 epoll_handler	oplib/src/handler.c	/^int epoll_handler(int timeout)$/;"	f
+err	my_protocol.h	/^    uint16_t err;$/;"	m	struct:__anon11
 err	my_protocol.h	/^    uint16_t err;$/;"	m	struct:__anon13
-err	my_protocol.h	/^    uint16_t err;$/;"	m	struct:__anon15
-errmsg	my_protocol.h	/^    char errmsg[128];$/;"	m	struct:__anon13
-fail_head	my_pool.h	/^    struct list_head fail_head;$/;"	m	struct:__anon5	typeref:struct:__anon5::list_head
-fd	cli_pool.h	/^    int fd;$/;"	m	struct:__anon10
-fd	my_pool.h	/^    int fd;$/;"	m	struct:__anon3
+errmsg	my_protocol.h	/^    char errmsg[128];$/;"	m	struct:__anon11
+fail_head	my_pool.h	/^    struct list_head fail_head;$/;"	m	struct:__anon4	typeref:struct:__anon4::list_head
+fd	cli_pool.h	/^    int fd;$/;"	m	struct:__anon8
+fd	my_pool.h	/^    int fd;\/\/mysql连接对应的tcp socket fd$/;"	m	struct:__anon2
 fd	oplib/include/log.h	/^    int fd;$/;"	m	struct:_log_t
-fd	oplib/src/handler.c	/^    int fd;$/;"	m	struct:__anon20	file:
+fd	oplib/src/handler.c	/^    int fd;$/;"	m	struct:__anon18	file:
 fd_is_legal	oplib/src/handler.c	/^static int fd_is_legal(int fd)$/;"	f	file:
-field_count	my_protocol.h	/^    uint8_t field_count;$/;"	m	struct:__anon15
+field_count	my_protocol.h	/^    uint8_t field_count;$/;"	m	struct:__anon13
 fname	oplib/include/log.h	/^    char *fname;$/;"	m	struct:_log_t
 free_chunks	oplib/include/genpool.h	/^    uint32_t free_chunks ;$/;"	m	struct:_genpool_handler_t
 free_chunks_head	oplib/include/genpool.h	/^    struct list_head free_chunks_head;$/;"	m	struct:_genpool_handler_t	typeref:struct:_genpool_handler_t::list_head
-free_pages_head	oplib/src/genpool.c	/^    struct list_head free_pages_head;$/;"	m	struct:__anon18	typeref:struct:__anon18::list_head	file:
+free_pages_head	oplib/src/genpool.c	/^    struct list_head free_pages_head;$/;"	m	struct:__anon16	typeref:struct:__anon16::list_head	file:
 full_chunks_head	oplib/include/genpool.h	/^    struct list_head full_chunks_head;$/;"	m	struct:_genpool_handler_t	typeref:struct:_genpool_handler_t::list_head
 func	oplib/src/timer.c	/^    timer_func_t func;$/;"	m	struct:timer_func_map	file:
 func_map	oplib/src/timer.c	/^static struct timer_func_map func_map[MAX_FUNC_MAP];$/;"	v	typeref:struct:timer_func_map	file:
 func_map_index	oplib/src/timer.c	/^static int func_map_index;$/;"	v	file:
 g_conf	my_conf.c	/^struct conf_t g_conf;$/;"	v	typeref:struct:conf_t
 g_log	main.c	/^log_t *g_log = NULL;$/;"	v
+g_logid	oplib/src/log.c	/^unsigned long g_logid = 0 ;$/;"	v
 g_usr1_reload	main.c	/^int g_usr1_reload = 0;$/;"	v
 genpool_alloc_page	oplib/src/genpool.c	/^inline void *genpool_alloc_page(genpool_handler_t *g)$/;"	f
 genpool_handler_t	oplib/include/genpool.h	/^} genpool_handler_t;$/;"	t	typeref:struct:_genpool_handler_t
@@ -515,24 +510,24 @@ get_conf_int	oplib/src/conf.c	/^int get_conf_int(const char *str, int def)$/;"	f
 get_conf_str	oplib/src/conf.c	/^char *get_conf_str(const char *str, const char *def)$/;"	f
 getkey	oplib/src/dict.c	/^static unsigned long getkey(dict_t *op, void *var)$/;"	f	file:
 getsum	oplib/src/dict.c	/^static unsigned long getsum(void *var)$/;"	f	file:
-handler	my_pool.c	/^static genpool_handler_t *handler;$/;"	v	file:
-handler_callback_t	oplib/src/handler.c	/^} handler_callback_t;$/;"	t	typeref:struct:__anon20	file:
+handler	my_pool.c	/^static genpool_handler_t *handler;\/\/mysql 的连接池，在my_pool_init分配$/;"	v	file:
+handler_callback_t	oplib/src/handler.c	/^} handler_callback_t;$/;"	t	typeref:struct:__anon18	file:
 hccount	oplib/src/handler.c	/^static int hccount = 0;$/;"	v	file:
 hcptr	oplib/src/handler.c	/^static handler_callback_t *hcptr = NULL;$/;"	v	file:
 head_array	oplib/include/dict.h	/^    struct list_head *head_array;$/;"	m	struct:dict	typeref:struct:dict::list_head
-host	my_conf.h	/^    char host[64];$/;"	m	struct:__anon21
-host	my_pool.h	/^    char host[MAX_HOST_LEN];$/;"	m	struct:__anon5
-idle_head	conn_pool.c	/^static struct list_head idle_head;$/;"	v	typeref:struct:list_head	file:
+host	my_conf.h	/^    char host[64];$/;"	m	struct:__anon19
+host	my_pool.h	/^    char host[MAX_HOST_LEN];$/;"	m	struct:__anon4
+idle_head	conn_pool.c	/^static struct list_head idle_head;\/\/接到一个客户端 连接后，将其放到这里$/;"	v	typeref:struct:list_head	file:
 idle_timeout	my_conf.h	/^    int idle_timeout;$/;"	m	struct:conf_t
 idle_timeout_timer	conn_pool.c	/^static int idle_timeout_timer(unsigned long arg)$/;"	f	file:
 in_handler	oplib/src/handler.c	/^int in_handler(int fd)$/;"	f
-info	my_pool.h	/^    my_info_t *info;$/;"	m	struct:__anon5
+info	my_pool.h	/^    my_info_t *info;$/;"	m	struct:__anon4
 info	oplib/include/log.h	40;"	d
 info	oplib/src/timer.c	/^    char *info;$/;"	m	struct:timer_func_map	file:
 init_handler	oplib/src/handler.c	/^int init_handler(int count)$/;"	f
 inited	oplib/src/conf.c	/^static int inited;$/;"	v	file:
 interval	oplib/src/timer.c	/^    int interval;$/;"	m	struct:timer_func_map	file:
-ip	cli_pool.h	/^    uint32_t ip;$/;"	m	struct:__anon10
+ip	cli_pool.h	/^    uint32_t ip;$/;"	m	struct:__anon8
 ip	my_conf.h	/^    char *ip;$/;"	m	struct:conf_t
 ipaddr_bsearch	oplib/src/iprange.c	/^static int ipaddr_bsearch(ipblock *base, size_t nelem, uint32_t addr)$/;"	f	file:
 ipaddr_e	oplib/include/iprange.h	/^    uint32_t ipaddr_e;$/;"	m	struct:_ipblock
@@ -549,17 +544,17 @@ iprange_sort	oplib/src/iprange.c	/^static int iprange_sort(iprange_t *handler)$/
 iprange_t	oplib/include/iprange.h	/^} iprange_t;$/;"	t	typeref:struct:_iprange_t
 iprange_unique	oplib/src/iprange.c	/^static int iprange_unique(iprange_t *handler)$/;"	f	file:
 ipstr2int	oplib/src/common.c	/^int ipstr2int(uint32_t *ip, const char *ipstr)$/;"	f
-lang	my_pool.h	/^    uint8_t lang;$/;"	m	struct:__anon4
-lang	my_protocol.h	/^    uint8_t lang;$/;"	m	struct:__anon11
+lang	my_pool.h	/^    uint8_t lang;$/;"	m	struct:__anon3
+lang	my_protocol.h	/^    uint8_t lang;$/;"	m	struct:__anon9
 lasttime	oplib/src/timer.c	/^    time_t lasttime;$/;"	m	struct:timer_func_map	file:
-len	my_protocol.h	/^    uint32_t len;$/;"	m	struct:__anon14
+len	my_protocol.h	/^    uint32_t len;$/;"	m	struct:__anon12
 level	oplib/include/log.h	/^    int level;$/;"	m	struct:_log_t
-link	cli_pool.h	/^    struct list_head link;$/;"	m	struct:__anon10	typeref:struct:__anon10::list_head
-link	conn_pool.h	/^    struct list_head link;$/;"	m	struct:__anon9	typeref:struct:__anon9::list_head
-link	my_pool.h	/^    struct list_head link;$/;"	m	struct:__anon3	typeref:struct:__anon3::list_head
+link	cli_pool.h	/^    struct list_head link;$/;"	m	struct:__anon8	typeref:struct:__anon8::list_head
+link	conn_pool.h	/^    struct list_head link;$/;"	m	struct:__anon7	typeref:struct:__anon7::list_head
+link	my_pool.h	/^    struct list_head link;$/;"	m	struct:__anon2	typeref:struct:__anon2::list_head
 link	oplib/include/dict.h	/^    struct list_head link;$/;"	m	struct:ditem	typeref:struct:ditem::list_head
-link	oplib/src/genpool.c	/^    struct list_head link;$/;"	m	struct:__anon18	typeref:struct:__anon18::list_head	file:
-link	oplib/src/genpool.c	/^    struct list_head link;$/;"	m	struct:__anon19	typeref:struct:__anon19::list_head	file:
+link	oplib/src/genpool.c	/^    struct list_head link;$/;"	m	struct:__anon16	typeref:struct:__anon16::list_head	file:
+link	oplib/src/genpool.c	/^    struct list_head link;$/;"	m	struct:__anon17	typeref:struct:__anon17::list_head	file:
 list_add	oplib/include/list.h	/^static inline void list_add(struct list_head *new, struct list_head *head)$/;"	f
 list_add_tail	oplib/include/list.h	/^static inline void list_add_tail(struct list_head *new, struct list_head *head)$/;"	f
 list_del	oplib/include/list.h	/^static inline void list_del(struct list_head *entry)$/;"	f
@@ -589,7 +584,7 @@ log_ret	oplib/src/log.c	/^int log_ret(log_t *log, int level, int flag, const cha
 log_strerr	oplib/include/log.h	38;"	d
 log_t	oplib/include/log.h	/^} log_t;$/;"	t	typeref:struct:_log_t
 loglevel	my_conf.h	/^    char *loglevel;$/;"	m	struct:conf_t
-magicnum	oplib/src/genpool.c	/^    unsigned long magicnum;$/;"	m	struct:__anon19	file:
+magicnum	oplib/src/genpool.c	/^    unsigned long magicnum;$/;"	m	struct:__anon17	file:
 main	main.c	/^int main(int argc, char *argv[])$/;"	f
 make_auth_result	my_protocol.c	/^int make_auth_result(buf_t *buf, my_auth_result_t *result)$/;"	f
 make_com	my_protocol.c	/^int make_com(buf_t *buf, cli_com_t *com)$/;"	f
@@ -599,16 +594,14 @@ make_login	my_protocol.c	/^int make_login(buf_t *buf, cli_auth_login_t *login)$/
 make_my_conn	my_pool.c	/^static int make_my_conn(my_conn_t *my)$/;"	f	file:
 make_rand_scram	passwd.c	/^int make_rand_scram(char *scram, int len)$/;"	f
 make_result_error	my_protocol.c	/^int make_result_error(buf_t *buf, my_result_error_t *result)$/;"	f
-marker	my_protocol.h	/^    uint8_t marker;$/;"	m	struct:__anon15
-master	my_conf.h	/^    my_node_conf_t master[1];$/;"	m	struct:__anon22
-master	my_pool.h	/^    my_node_t master[MAX_MASTER_NODE];$/;"	m	struct:__anon6
-master_num	my_pool.h	/^    int master_num;$/;"	m	struct:__anon6
+marker	my_protocol.h	/^    uint8_t marker;$/;"	m	struct:__anon13
 max	oplib/include/iprange.h	/^    int max, num;$/;"	m	struct:_iprange_t
+max_connection	my_pool.h	/^	int max_connection ;\/\/最大连接数$/;"	m	struct:__anon4
 max_connections	my_conf.h	/^    int max_connections;$/;"	m	struct:conf_t
 max_free_chunks	oplib/include/genpool.h	/^	uint32_t max_free_chunks;$/;"	m	struct:_genpool_handler_t
-max_pkt_size	my_protocol.h	/^    uint32_t max_pkt_size;$/;"	m	struct:__anon12
+max_pkt_size	my_protocol.h	/^    uint32_t max_pkt_size;$/;"	m	struct:__anon10
 max_total_chunks	oplib/include/genpool.h	/^	uint32_t max_total_chunks;$/;"	m	struct:_genpool_handler_t
-mcount	my_conf.h	/^    int mcount;$/;"	m	struct:__anon22
+maxnum	my_conf.h	/^    int  maxnum;\/\/连接的最大数目$/;"	m	struct:__anon19
 md5_decode	oplib/src/md5.c	/^static void md5_decode (uint32_t *output,const uint8_t *input,uint32_t len) {$/;"	f	file:
 md5_encode	oplib/src/md5.c	/^static void md5_encode (uint8_t *output,const uint32_t *input,uint32_t len) {$/;"	f	file:
 md5_final	oplib/src/md5.c	/^void md5_final (uint8_t digest[16],md5ctx *ctx) {$/;"	f
@@ -617,16 +610,17 @@ md5_transform	oplib/src/md5.c	/^static void md5_transform (uint32_t state[4],con
 md5_update	oplib/src/md5.c	/^void md5_update (md5ctx *ctx,const uint8_t *buff,uint32_t leng) {$/;"	f
 md5ctx	oplib/include/md5.h	/^} md5ctx;$/;"	t	typeref:struct:_md5ctx
 mem	my_buf.h	/^    char mem[PREALLOC_BUF_SIZE];$/;"	m	struct:buf_t
-mem	oplib/src/genpool.c	/^    char mem[];$/;"	m	struct:__anon19	file:
+mem	oplib/src/genpool.c	/^    char mem[];$/;"	m	struct:__anon17	file:
+min_connection	my_pool.h	/^	int min_connection ;\/\/初始申请的连接数目$/;"	m	struct:__anon4
 mmhash64	oplib/src/hash.c	/^inline uint64_t mmhash64(const void *key, int len)$/;"	f
 mod_handler	oplib/src/handler.c	/^int mod_handler(int fd, uint32_t event, void *cb, void *arg)$/;"	f
-msg	my_protocol.h	/^    char msg[512];$/;"	m	struct:__anon15
-my	conn_pool.h	/^    my_conn_t *my;$/;"	m	struct:__anon9
+msg	my_protocol.h	/^    char msg[512];$/;"	m	struct:__anon13
+my	conn_pool.h	/^    my_conn_t *my;\/\/对应的mysql连接是哪个 $/;"	m	struct:__anon7
 my_answer_cb	my_ops.c	/^int my_answer_cb(int fd, void *arg)$/;"	f
-my_auth_init_t	my_protocol.h	/^}my_auth_init_t;$/;"	t	typeref:struct:__anon11
-my_auth_result_t	my_protocol.h	/^}my_auth_result_t;$/;"	t	typeref:struct:__anon13
+my_auth_init_t	my_protocol.h	/^}my_auth_init_t;$/;"	t	typeref:struct:__anon9
+my_auth_result_t	my_protocol.h	/^}my_auth_result_t;$/;"	t	typeref:struct:__anon11
 my_conf_init	my_conf.c	/^int my_conf_init(const char *log)$/;"	f
-my_conf_t	my_conf.h	/^}my_conf_t;$/;"	t	typeref:struct:__anon22
+my_conf_t	my_conf.h	/^}my_conf_t;$/;"	t	typeref:struct:__anon20
 my_conn_alloc	my_pool.c	/^static my_conn_t *my_conn_alloc(my_node_t *n)$/;"	f	file:
 my_conn_close	my_pool.c	/^int my_conn_close(my_conn_t *my)$/;"	f
 my_conn_close_and_release	my_pool.c	/^static int my_conn_close_and_release(my_conn_t *my)$/;"	f	file:
@@ -647,37 +641,36 @@ my_conn_set_fail	my_pool.c	/^static int my_conn_set_fail(my_conn_t *my)$/;"	f	fi
 my_conn_set_ping	my_pool.c	/^static int my_conn_set_ping(my_conn_t *my)$/;"	f	file:
 my_conn_set_raw	my_pool.c	/^static int my_conn_set_raw(my_conn_t *my)$/;"	f	file:
 my_conn_set_used	my_pool.c	/^static int my_conn_set_used(my_conn_t *my, void *ptr)$/;"	f	file:
-my_conn_t	my_pool.h	/^} my_conn_t;$/;"	t	typeref:struct:__anon3
+my_conn_t	my_pool.h	/^} my_conn_t;$/;"	t	typeref:struct:__anon2
 my_crypt	passwd.c	/^static void my_crypt(char *to, const char *s1, const char *s2, uint32_t len)$/;"	f	file:
 my_ctx_init	my_pool.c	/^static int my_ctx_init(my_ctx_t *ctx)$/;"	f	file:
-my_ctx_t	my_pool.h	/^} my_ctx_t;$/;"	t	typeref:struct:__anon2
+my_ctx_t	my_pool.h	/^} my_ctx_t;$/;"	t	typeref:struct:__anon1
 my_hs_stage1_cb	my_ops.c	/^int my_hs_stage1_cb(int fd, void *arg)$/;"	f
 my_hs_stage2_cb	my_ops.c	/^int my_hs_stage2_cb(int fd, void *arg)$/;"	f
 my_hs_stage3_cb	my_ops.c	/^int my_hs_stage3_cb(int fd, void *arg)$/;"	f
 my_info_set	my_pool.c	/^int my_info_set(uint8_t prot, uint8_t lang, uint16_t status, \\$/;"	f
-my_info_t	my_pool.h	/^} my_info_t;$/;"	t	typeref:struct:__anon4
-my_master_conn_get	my_pool.c	/^my_conn_t *my_master_conn_get(void *c, uint32_t ip, uint16_t port)$/;"	f
-my_master_reg	my_pool.c	/^int my_master_reg(char *host, char *srv, char *user, char *pass, int count)$/;"	f
+my_info_t	my_pool.h	/^} my_info_t;$/;"	t	typeref:struct:__anon3
 my_node_closing_cleanup	my_pool.c	/^static int my_node_closing_cleanup(my_node_t *node)$/;"	f	file:
 my_node_closing_cleanup_timer	my_pool.c	/^static int my_node_closing_cleanup_timer(unsigned long arg)$/;"	f	file:
-my_node_conf_t	my_conf.h	/^}my_node_conf_t;$/;"	t	typeref:struct:__anon21
+my_node_conf_t	my_conf.h	/^}my_node_conf_t;$/;"	t	typeref:struct:__anon19
 my_node_init	my_pool.c	/^static int my_node_init(my_node_t *n)$/;"	f	file:
 my_node_is_closing	my_pool.c	/^static int my_node_is_closing(my_node_t *node)$/;"	f	file:
 my_node_set_closing	my_pool.c	/^static int my_node_set_closing(my_node_t *node)$/;"	f	file:
-my_node_t	my_pool.h	/^} my_node_t;$/;"	t	typeref:struct:__anon5
+my_node_t	my_pool.h	/^} my_node_t;$/;"	t	typeref:struct:__anon4
 my_ping_prepare	my_ops.c	/^int my_ping_prepare(my_conn_t *my)$/;"	f
 my_ping_req_cb	my_ops.c	/^static int my_ping_req_cb(int fd, void *arg)$/;"	f	file:
 my_ping_resp_cb	my_ops.c	/^static int my_ping_resp_cb(int fd, void *arg)$/;"	f	file:
 my_pool_have_conn	my_pool.c	/^int my_pool_have_conn(void)$/;"	f
 my_pool_init	my_pool.c	/^int my_pool_init(int count)$/;"	f
-my_pool_t	my_pool.h	/^} my_pool_t;$/;"	t	typeref:struct:__anon6
+my_pool_t	my_pool.h	/^} my_pool_t;$/;"	t	typeref:struct:__anon5
 my_query_cb	my_ops.c	/^int my_query_cb(int fd, void *arg)$/;"	f
 my_real_read	my_ops.c	/^static int my_real_read(int fd, buf_t *buf, int *done)$/;"	f	file:
 my_real_read_result_set	my_ops.c	/^static int my_real_read_result_set(int fd, buf_t *buf)$/;"	f	file:
 my_real_write	my_ops.c	/^static int my_real_write(int fd, buf_t *buf, int *done)$/;"	f	file:
-my_result_error_t	my_protocol.h	/^}my_result_error_t;$/;"	t	typeref:struct:__anon15
+my_result_error_t	my_protocol.h	/^}my_result_error_t;$/;"	t	typeref:struct:__anon13
 my_slave_conn_get	my_pool.c	/^my_conn_t *my_slave_conn_get(void *c, uint32_t ip, uint16_t port)$/;"	f
-my_slave_reg	my_pool.c	/^int my_slave_reg(char *host, char *srv, char *user, char *pass, int count)$/;"	f
+my_slave_reg	my_pool.c	/^int my_slave_reg(char *host, char *srv, char *user, char *pass, int mincount, int maxcount)$/;"	f
+my_try_increase_connection	my_pool.c	/^int my_try_increase_connection( )$/;"	f
 my_unreg	my_pool.c	/^int my_unreg(char *host, char *srv)$/;"	f
 my_use_db_prepare	my_ops.c	/^static int my_use_db_prepare(conn_t *c)$/;"	f	file:
 my_use_db_req_cb	my_ops.c	/^static int my_use_db_req_cb(int fd, void *arg)$/;"	f	file:
@@ -697,48 +690,48 @@ mysql_sha1_result	sha1.c	/^int mysql_sha1_result(SHA1_CONTEXT *context,$/;"	f
 naivehash64	oplib/src/hash.c	/^inline uint64_t naivehash64(const void *key, int len)$/;"	f
 net_new_transaction	mysql_com.h	351;"	d
 next	oplib/include/list.h	/^	struct list_head *next, *prev;$/;"	m	struct:list_head	typeref:struct:list_head::list_head
-node	my_pool.h	/^    void *node;$/;"	m	struct:__anon3
+node	my_pool.h	/^    void *node;\/\/这个mysql连接所属的机器节点是哪个$/;"	m	struct:__anon2
 num	oplib/include/iprange.h	/^    int max, num;$/;"	m	struct:_iprange_t
 offsetof	oplib/include/list.h	219;"	d
 packet_error	mysql_com.h	246;"	d
 padding	oplib/src/md5.c	/^static const uint8_t padding[64] = {$/;"	v	file:
 page_size	oplib/include/genpool.h	/^    uint32_t page_size; \/\/一个元素的大小 $/;"	m	struct:_genpool_handler_t
-page_t	oplib/src/genpool.c	/^} page_t;$/;"	t	typeref:struct:__anon19	file:
+page_t	oplib/src/genpool.c	/^} page_t;$/;"	t	typeref:struct:__anon17	file:
 pages_per_chunk	oplib/include/genpool.h	/^	uint32_t pages_per_chunk;$/;"	m	struct:_genpool_handler_t
 parse_auth_result	my_protocol.c	/^int parse_auth_result(buf_t *buf, my_auth_result_t *result)$/;"	f
 parse_com	my_protocol.c	/^int parse_com(buf_t *buf, cli_com_t *com)$/;"	f
 parse_init	my_protocol.c	/^int parse_init(buf_t *buf, my_auth_init_t *init)$/;"	f
 parse_login	my_protocol.c	/^int parse_login(buf_t *buf, cli_auth_login_t *login)$/;"	f
 parse_req_sql	sqldump.c	/^static int parse_req_sql(conn_t *c, char *buf, int len)$/;"	f	file:
-pass	my_conf.h	/^    char pass[64];$/;"	m	struct:__anon21
-pass	my_pool.h	/^    char pass[MAX_PASS_LEN];$/;"	m	struct:__anon5
-passtype	my_protocol.h	/^    char passtype[128];$/;"	m	struct:__anon12
+pass	my_conf.h	/^    char pass[64];$/;"	m	struct:__anon19
+pass	my_pool.h	/^    char pass[MAX_PASS_LEN];$/;"	m	struct:__anon4
+passtype	my_protocol.h	/^    char passtype[128];$/;"	m	struct:__anon10
 passwd	my_conf.h	/^    char *passwd;$/;"	m	struct:conf_t
-ping_head	my_pool.h	/^    struct list_head ping_head;$/;"	m	struct:__anon5	typeref:struct:__anon5::list_head
+ping_head	my_pool.h	/^    struct list_head ping_head;$/;"	m	struct:__anon4	typeref:struct:__anon4::list_head
+pktlen	my_protocol.h	/^    uint32_t pktlen;$/;"	m	struct:__anon10
 pktlen	my_protocol.h	/^    uint32_t pktlen;$/;"	m	struct:__anon11
 pktlen	my_protocol.h	/^    uint32_t pktlen;$/;"	m	struct:__anon12
 pktlen	my_protocol.h	/^    uint32_t pktlen;$/;"	m	struct:__anon13
-pktlen	my_protocol.h	/^    uint32_t pktlen;$/;"	m	struct:__anon14
-pktlen	my_protocol.h	/^    uint32_t pktlen;$/;"	m	struct:__anon15
+pktlen	my_protocol.h	/^    uint32_t pktlen;$/;"	m	struct:__anon9
+pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon10
 pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon11
 pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon12
 pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon13
-pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon14
-pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon15
-plug	my_protocol.h	/^    char plug[64];$/;"	m	struct:__anon11
-port	cli_pool.h	/^    uint16_t port;$/;"	m	struct:__anon10
+pktno	my_protocol.h	/^    uint8_t pktno;$/;"	m	struct:__anon9
+plug	my_protocol.h	/^    char plug[64];$/;"	m	struct:__anon9
+port	cli_pool.h	/^    uint16_t port;$/;"	m	struct:__anon8
 port	my_conf.h	/^    char *port;$/;"	m	struct:conf_t
-port	my_conf.h	/^    char port[16];$/;"	m	struct:__anon21
+port	my_conf.h	/^    char port[16];$/;"	m	struct:__anon19
 pos	my_buf.h	/^    size_t pos;$/;"	m	struct:buf_t
 prealloc_chunks	oplib/include/genpool.h	/^    uint32_t prealloc_chunks;$/;"	m	struct:_genpool_handler_t
 prepare_mysql_head	conn_pool.c	/^static struct list_head prepare_mysql_head;$/;"	v	typeref:struct:list_head	file:
 prepare_mysql_timeout	my_conf.h	/^    int prepare_mysql_timeout;$/;"	m	struct:conf_t
 prepare_mysql_timeout_timer	conn_pool.c	/^static int prepare_mysql_timeout_timer(unsigned long arg)$/;"	f	file:
 prev	oplib/include/list.h	/^	struct list_head *next, *prev;$/;"	m	struct:list_head	typeref:struct:list_head::
-prot_ver	my_protocol.h	/^    uint8_t prot_ver;$/;"	m	struct:__anon11
-protocol	my_pool.h	/^    uint8_t protocol;$/;"	m	struct:__anon4
+prot_ver	my_protocol.h	/^    uint8_t prot_ver;$/;"	m	struct:__anon9
+protocol	my_pool.h	/^    uint8_t protocol;$/;"	m	struct:__anon3
 ptr	my_buf.h	/^    char *ptr;$/;"	m	struct:buf_t
-raw_head	my_pool.h	/^    struct list_head raw_head;$/;"	m	struct:__anon5	typeref:struct:__anon5::list_head
+raw_head	my_pool.h	/^    struct list_head raw_head;$/;"	m	struct:__anon4	typeref:struct:__anon4::list_head
 read_client_head	conn_pool.c	/^static struct list_head read_client_head;$/;"	v	typeref:struct:list_head	file:
 read_client_timeout	my_conf.h	/^    int read_client_timeout;$/;"	m	struct:conf_t
 read_client_timeout_timer	conn_pool.c	/^static int read_client_timeout_timer(unsigned long arg)$/;"	f	file:
@@ -746,13 +739,13 @@ read_mysql_write_client_head	conn_pool.c	/^static struct list_head read_mysql_wr
 read_mysql_write_client_timeout	my_conf.h	/^    int read_mysql_write_client_timeout;$/;"	m	struct:conf_t
 read_mysql_write_client_timeout_timer	conn_pool.c	/^static int read_mysql_write_client_timeout_timer(unsigned long arg)$/;"	f	file:
 reloc	my_buf.h	/^    int reloc;$/;"	m	struct:buf_t
-result	my_protocol.h	/^    uint8_t result;$/;"	m	struct:__anon13
-role	my_pool.h	/^    int role;\/\/SLAVE_ROLE还是master$/;"	m	struct:__anon5
-scount	my_conf.h	/^    int scount;$/;"	m	struct:__anon22
-scram	cli_pool.h	/^    char scram[SCRAMBLE_LENGTH + 1];$/;"	m	struct:__anon10
-scram	my_protocol.h	/^    char scram[128];$/;"	m	struct:__anon12
-scram	my_protocol.h	/^    char scram[64];$/;"	m	struct:__anon11
-scram_len	my_protocol.h	/^    uint8_t scram_len;$/;"	m	struct:__anon11
+result	my_protocol.h	/^    uint8_t result;$/;"	m	struct:__anon11
+role	my_pool.h	/^	int role ;$/;"	m	struct:__anon4
+scount	my_conf.h	/^    int scount;$/;"	m	struct:__anon20
+scram	cli_pool.h	/^    char scram[SCRAMBLE_LENGTH + 1];$/;"	m	struct:__anon8
+scram	my_protocol.h	/^    char scram[128];$/;"	m	struct:__anon10
+scram	my_protocol.h	/^    char scram[64];$/;"	m	struct:__anon9
+scram_len	my_protocol.h	/^    uint8_t scram_len;$/;"	m	struct:__anon9
 scramble	passwd.c	/^void scramble(char *to, const char *message, const char *password)$/;"	f
 setnonblock	oplib/src/sock.c	/^inline int setnonblock(int fd)$/;"	f
 sha_const_key	sha1.c	/^const uint32_t sha_const_key[5]=$/;"	v
@@ -761,9 +754,9 @@ sign	oplib/include/dict.h	/^    unsigned long   (*sign)(void *);$/;"	m	struct:di
 signal_init	main.c	/^static int signal_init(void)$/;"	f	file:
 signal_usr1	main.c	/^static void signal_usr1(int signal)$/;"	f	file:
 size	my_buf.h	/^    size_t size;$/;"	m	struct:buf_t
-slave	my_conf.h	/^    my_node_conf_t slave[64];$/;"	m	struct:__anon22
-slave	my_pool.h	/^    my_node_t slave[MAX_SLAVE_NODE];$/;"	m	struct:__anon6
-slave_num	my_pool.h	/^    int slave_num;$/;"	m	struct:__anon6
+slave	my_conf.h	/^    my_node_conf_t slave[64];\/\/slave的机器数目$/;"	m	struct:__anon20
+slave	my_pool.h	/^    my_node_t slave[MAX_SLAVE_NODE];$/;"	m	struct:__anon5
+slave_num	my_pool.h	/^    int slave_num;$/;"	m	struct:__anon5
 sql_count	sqldump.c	/^static int sql_count = 0;$/;"	v	file:
 sql_fd	sqldump.c	/^static int sql_fd = -1;$/;"	v	file:
 sqldump	sqldump.c	/^int sqldump(conn_t *c)$/;"	f
@@ -771,17 +764,17 @@ sqldump_close	sqldump.c	/^int sqldump_close(void)$/;"	f
 sqldump_fname	sqldump.c	/^static char sqldump_fname[1024] = ".\/sql.log";$/;"	v	file:
 sqldump_init	sqldump.c	/^int sqldump_init(const char *fname)$/;"	f
 sqllog	my_conf.h	/^    char *sqllog;$/;"	m	struct:conf_t
-sqlstate	my_protocol.h	/^    char sqlstate[5];$/;"	m	struct:__anon15
-srv	my_pool.h	/^    char srv[MAX_SRV_LEN];$/;"	m	struct:__anon5
-srv_ver	my_protocol.h	/^    char srv_ver[64];$/;"	m	struct:__anon11
+sqlstate	my_protocol.h	/^    char sqlstate[5];$/;"	m	struct:__anon13
+srv	my_pool.h	/^    char srv[MAX_SRV_LEN];\/\/这是端口····这名字 $/;"	m	struct:__anon4
+srv_ver	my_protocol.h	/^    char srv_ver[64];$/;"	m	struct:__anon9
 statbuf	oplib/include/log.h	/^    struct stat statbuf;$/;"	m	struct:_log_t	typeref:struct:_log_t::stat
-state	conn_pool.h	/^    int state;$/;"	m	struct:__anon9
+state	conn_pool.h	/^    int state;$/;"	m	struct:__anon7
 state	oplib/include/md5.h	/^	uint32_t state[4];$/;"	m	struct:_md5ctx
-state_time	conn_pool.h	/^    time_t state_time;$/;"	m	struct:__anon9
-state_time	my_pool.h	/^    time_t state_time;$/;"	m	struct:__anon3
-status	my_pool.h	/^    uint16_t status;$/;"	m	struct:__anon4
-status	my_protocol.h	/^    uint16_t status;$/;"	m	struct:__anon11
-tid	my_protocol.h	/^    uint32_t tid;$/;"	m	struct:__anon11
+state_time	conn_pool.h	/^    time_t state_time;$/;"	m	struct:__anon7
+state_time	my_pool.h	/^    time_t state_time;$/;"	m	struct:__anon2
+status	my_pool.h	/^    uint16_t status;$/;"	m	struct:__anon3
+status	my_protocol.h	/^    uint16_t status;$/;"	m	struct:__anon9
+tid	my_protocol.h	/^    uint32_t tid;$/;"	m	struct:__anon9
 timer	oplib/src/timer.c	/^int timer(void)$/;"	f
 timer_func_map	oplib/src/timer.c	/^struct timer_func_map{$/;"	s	file:
 timer_func_t	oplib/include/timer.h	/^typedef int (*timer_func_t)(unsigned long arg);$/;"	t
@@ -789,21 +782,21 @@ timer_init	oplib/src/timer.c	/^int timer_init(void)$/;"	f
 timer_register	oplib/src/timer.c	/^int timer_register(timer_func_t func, unsigned long arg, char *info, int interval)$/;"	f
 total_chunks	oplib/include/genpool.h	/^    uint32_t total_chunks;$/;"	m	struct:_genpool_handler_t
 trim	oplib/src/common.c	/^int trim(char *buf)$/;"	f
-tv_end	conn_pool.h	/^    struct timeval tv_end;$/;"	m	struct:__anon9	typeref:struct:__anon9::timeval
-tv_start	conn_pool.h	/^    struct timeval tv_start;$/;"	m	struct:__anon9	typeref:struct:__anon9::timeval
-update_time	my_pool.h	/^    time_t update_time;$/;"	m	struct:__anon4
+tv_end	conn_pool.h	/^    struct timeval tv_end;$/;"	m	struct:__anon7	typeref:struct:__anon7::timeval
+tv_start	conn_pool.h	/^    struct timeval tv_start;$/;"	m	struct:__anon7	typeref:struct:__anon7::timeval
+update_time	my_pool.h	/^    time_t update_time;$/;"	m	struct:__anon3
 used	my_buf.h	/^    size_t used;$/;"	m	struct:buf_t
 used_chunks_head	oplib/include/genpool.h	/^    struct list_head used_chunks_head;$/;"	m	struct:_genpool_handler_t	typeref:struct:_genpool_handler_t::list_head
-used_head	my_pool.h	/^    struct list_head used_head;$/;"	m	struct:__anon5	typeref:struct:__anon5::list_head
-used_pages_head	oplib/src/genpool.c	/^    struct list_head used_pages_head;$/;"	m	struct:__anon18	typeref:struct:__anon18::list_head	file:
+used_head	my_pool.h	/^    struct list_head used_head;\/\/已经分配给某个客户端的mysql连接list$/;"	m	struct:__anon4	typeref:struct:__anon4::list_head
+used_pages_head	oplib/src/genpool.c	/^    struct list_head used_pages_head;$/;"	m	struct:__anon16	typeref:struct:__anon16::list_head	file:
 user	my_conf.h	/^    char *user;$/;"	m	struct:conf_t
-user	my_conf.h	/^    char user[16];$/;"	m	struct:__anon21
-user	my_pool.h	/^    char user[MAX_USER_LEN];$/;"	m	struct:__anon5
-user	my_protocol.h	/^    char user[128];$/;"	m	struct:__anon12
+user	my_conf.h	/^    char user[16];$/;"	m	struct:__anon19
+user	my_pool.h	/^    char user[MAX_USER_LEN];$/;"	m	struct:__anon4
+user	my_protocol.h	/^    char user[128];$/;"	m	struct:__anon10
 usr1_reload	work.c	/^static int usr1_reload(void)$/;"	f	file:
 value	oplib/include/dict.h	/^    void    *value;$/;"	m	struct:ditem
 var	oplib/include/dict.h	/^    void    *var;$/;"	m	struct:ditem
-ver	my_pool.h	/^    char ver[64];$/;"	m	struct:__anon4
+ver	my_pool.h	/^    char ver[64];$/;"	m	struct:__anon3
 work	work.c	/^int work(int fd)$/;"	f
 worker	my_conf.h	/^    int worker;$/;"	m	struct:conf_t
 write_mysql_head	conn_pool.c	/^static struct list_head write_mysql_head;$/;"	v	typeref:struct:list_head	file:

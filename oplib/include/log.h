@@ -29,8 +29,8 @@ enum{
     LOG_NONE = 0,
     LOG_LEVEL_ERR,
     LOG_LEVEL_LOG,
-    LOG_LEVEL_DEBUG,
-    LOG_LEVEL_INFO
+    LOG_LEVEL_INFO,
+    LOG_LEVEL_DEBUG
 };
 
 #define log(log, ...) log_ret(log, LOG_LEVEL_LOG, LOG_WITHOUT_STRERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)

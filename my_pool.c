@@ -37,7 +37,7 @@ static int my_conn_init(my_conn_t *my, my_node_t *n);
 static int my_node_init(my_node_t *n);
 static my_conn_t *my_conn_alloc(my_node_t *n);
 static int make_my_conn(my_conn_t *my);
-static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pass, int count);
+static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pass, int mincount, int maxcount);
 static int my_conn_set_used(my_conn_t *my, void *ptr);
 static int my_conn_set_dead(my_conn_t *my);
 static int my_conn_set_raw(my_conn_t *my);
@@ -156,6 +156,9 @@ static int my_node_init(my_node_t *n)
     n->role = 0;
     n->closing = 0;
     n->closing_time = 0;
+	n->curall_connection = 0 ;
+	n->min_connection = 0 ;
+	n->max_connection = 0 ;
 
     return 0;
 }
@@ -182,7 +185,7 @@ static my_conn_t *my_conn_alloc(my_node_t *n)
         log(g_log, "my_conn_init error\n");
         return NULL;
     }
-
+	++ n->curall_connection ;
     return my;
 }
 
@@ -195,6 +198,10 @@ static my_conn_t *my_conn_alloc(my_node_t *n)
 
 static int my_conn_release(my_conn_t *my)
 {
+	if( my->node != NULL){
+		my_node_t *node = (my_node_t*)my->node ;
+		-- node->curall_connection ;
+	}
     return genpool_release_page(handler, my);
 }
 
@@ -276,6 +283,7 @@ static int make_my_conn(my_conn_t *my)
     node = my->node;
 
     if( (res = my_conn_init(my, node)) < 0 ){
+		my_conn_release(my) ;//这里必须释放结构，因为没法重连
         return res;
     }
 
@@ -302,7 +310,7 @@ static int make_my_conn(my_conn_t *my)
  *
  */
 
-static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pass, int count)
+static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pass, int mincount, int maxcount )
 {//初始化连接数据，并建立真实mysql连接
     int i, fd, res = 0;
     my_conn_t *my;
@@ -312,12 +320,14 @@ static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pas
         return res;
     }
 
+	node->min_connection = mincount ;
+	node->max_connection = maxcount ;
     strncpy(node->host, host, MAX_HOST_LEN - 1);
     strncpy(node->srv, srv, MAX_SRV_LEN - 1);
     strncpy(node->user, user, MAX_USER_LEN - 1);
     strncpy(node->pass, pass, MAX_PASS_LEN - 1);
 
-    for(i = 0; i < count; i++){//一个个建立那么多连接
+    for(i = 0; i < mincount; i++){//一个个建立那么多连接
         if( (my = my_conn_alloc(node)) == NULL ){//申请一个mysql 连接结构，初始化
             log(g_log, "my_conn_alloc error\n");
             return -1;
@@ -338,13 +348,13 @@ static int _my_reg(my_node_t *node, char *host, char *srv, char *user, char *pas
  *
  */
 
-int my_slave_reg(char *host, char *srv, char *user, char *pass, int count)
+int my_slave_reg(char *host, char *srv, char *user, char *pass, int mincount, int maxcount)
 {
     int i, res = 0;
     my_node_t *node;
 
     for(i = 0; i < MAX_SLAVE_NODE; i++){
-        node = &(mypool->slave[i]);//找一个空位置
+        node = &(mypool->slave[i]);//找一个空位置，用来存储IP等信息
         if(node->role == 0){
             break;
         }
@@ -359,14 +369,14 @@ int my_slave_reg(char *host, char *srv, char *user, char *pass, int count)
         mypool->slave_num++;
     }
 
-    res = _my_reg(node, host, srv, user, pass, count);
+    res = _my_reg(node, host, srv, user, pass, mincount, maxcount);
     if(res < 0){
         log(g_log, "_my_reg error\n");
         return res;
     }
     node->role = 1;
 
-    log(g_log, "host: %s, srv: %s, user: %s, cnum: %d\n", host, srv, user, count);
+    log(g_log, "host: %s, srv: %s, user: %s, cnum: %d\n", host, srv, user, mincount);
 
     return res;
 }
@@ -623,6 +633,7 @@ static int my_conn_set_dead(my_conn_t *my)
 
     list_move_tail(&(my->link), &(node->dead_head));
     my->state_time = time(NULL);
+	node->avail_count--;//减少可用连接数
 
     return 0;
 }
@@ -644,6 +655,7 @@ static int my_conn_set_raw(my_conn_t *my)
 
     list_move_tail(&(my->link), &(node->raw_head));
     my->state_time = time(NULL);
+	node->avail_count--;//减少可用连接数
 
     return 0;
 }
@@ -662,6 +674,7 @@ static int my_conn_set_fail(my_conn_t *my)
 
     list_move_tail(&(my->link), &(node->fail_head));
     my->state_time = time(NULL);
+	node->avail_count--;//减少可用连接数
 
     return 0;
 }
@@ -683,6 +696,7 @@ static int my_conn_set_ping(my_conn_t *my)
 
     list_move_tail(&(my->link), &(node->ping_head));
     my->state_time = time(NULL);
+	node->avail_count--;//减少可用连接数
 
     return 0;
 }
@@ -1031,6 +1045,47 @@ int my_pool_have_conn(void)
             return 1;
         }
     }
+
+    return 0;
+}
+
+int my_try_increase_connection( )
+{//ip:port  为客户端连接IP,端口
+    int i, index;
+    my_node_t *node;
+    my_conn_t *my;
+    struct list_head *head;
+    time_t now = time(NULL);
+	int res ;
+
+    if(mypool->slave_num == 0){
+        log(g_log, "no slave register\n");
+        return -1;
+    }
+
+    for(i = 0; i < mypool->slave_num; i++){
+        index = (now + i) % (mypool->slave_num);
+		//一个个slave找，注意这里是先找第一个mysql,再找第二个
+        node = &(mypool->slave[index]);
+        if( (!my_node_is_closing(node)) && node->curall_connection < node->max_connection  ){
+			if( (my = my_conn_alloc(node)) == NULL ){//申请一个mysql 连接结构，初始化
+				log(g_log, "my_conn_alloc error\n");
+				continue ;
+			}
+
+			if( (res = make_my_conn(my)) < 0 ){
+				log(g_log, "make my conn error in my_try_increase_connection, ignore, continue next.\n");
+				continue ;
+			}
+			break ;//新连接启动了，连接成功后会挂到avaliable连接上面
+        }
+    }
+
+    if(i == mypool->slave_num){//没找到`````
+        log(g_log, "my_try_increase_connection failed. no slave available, slave_num:%d\n", mypool->slave_num );
+        return -2;
+    }
+
 
     return 0;
 }

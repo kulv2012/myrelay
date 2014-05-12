@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -I ./oplib/include/
+CFLAGS = -g -I ./oplib/include/ -lpthread
 OBJECT = cli_pool.o conn_pool.o main.o my_buf.o my_ops.o my_pool.o work.o my_protocol.o sqldump.o passwd.o sha1.o my_conf.o
 
 all : $(OBJECT)
