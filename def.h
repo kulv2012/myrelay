@@ -10,4 +10,7 @@
 #define MAX_SLAVE_NODE 64
 #define MAX_MASTER_NODE 1
 
+extern int g_cursecond ;
+
 #endif
+

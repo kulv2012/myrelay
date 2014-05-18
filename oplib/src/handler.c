@@ -65,17 +65,6 @@ int init_handler(int count)
     return 0;
 }
 
-/*
- * fun: check fd is legal
- * arg: fd
- * ret: legal=1, illegal=0
- *
- */
-
-static int fd_is_legal(int fd)
-{
-    return (fd >= 0) && (fd < hccount);
-}
 
 /*
  * fun: add handler into handler pool
@@ -239,7 +228,7 @@ int epoll_handler(int timeout)
 
     for(i = 0; i < nfds; i++){
         ptr = events[i].data.ptr;
-        if(ptr->callback){//调用其callback
+        if(ptr->callback){//调用其callback,不管读写都调用这个函数，原因是mysql是一来一回的protocal
 			++ g_logid ;
             res = ptr->callback(ptr->fd, ptr->arg);
         }

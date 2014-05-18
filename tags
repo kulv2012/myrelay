@@ -39,7 +39,7 @@ CLIENT_SECURE_CONNECTION	mysql_com.h	144;"	d
 CLIENT_SSL	mysql_com.h	140;"	d
 CLIENT_SSL_VERIFY_SERVER_CERT	mysql_com.h	148;"	d
 CLIENT_TRANSACTIONS	mysql_com.h	142;"	d
-CLI_COM_IGNORE_OK_PKT_SIZE	my_ops.c	1026;"	d	file:
+CLI_COM_IGNORE_OK_PKT_SIZE	my_ops.c	980;"	d	file:
 COM_BINLOG_DUMP	mysql_com.h	/^  COM_TIME, COM_DELAYED_INSERT, COM_CHANGE_USER, COM_BINLOG_DUMP,$/;"	e	enum:enum_server_command
 COM_CHANGE_USER	mysql_com.h	/^  COM_TIME, COM_DELAYED_INSERT, COM_CHANGE_USER, COM_BINLOG_DUMP,$/;"	e	enum:enum_server_command
 COM_CONNECT	mysql_com.h	/^  COM_PROCESS_INFO, COM_CONNECT, COM_PROCESS_KILL, COM_DEBUG, COM_PING,$/;"	e	enum:enum_server_command
@@ -308,7 +308,7 @@ TIMESTAMP_FLAG	mysql_com.h	94;"	d
 UNIQUE_FLAG	mysql_com.h	101;"	d
 UNIQUE_KEY_FLAG	mysql_com.h	84;"	d
 UNSIGNED_FLAG	mysql_com.h	87;"	d
-USAGE	main.c	34;"	d	file:
+USAGE	main.c	35;"	d	file:
 USERNAME_CHAR_LENGTH	mysql_com.h	26;"	d
 USERNAME_LENGTH	mysql_com.h	28;"	d
 USER_HOST_BUFF_SIZE	mysql_com.h	39;"	d
@@ -361,7 +361,7 @@ arg	oplib/src/timer.c	/^    unsigned long arg;$/;"	m	struct:timer_func_map	file:
 array	oplib/include/iprange.h	/^    ipblock *array;$/;"	m	struct:_iprange_t
 attr	oplib/include/dict.h	/^    unsigned long   attr;$/;"	m	struct:dict
 avail	my_pool.h	/^    int avail;$/;"	m	struct:__anon3
-avail_count	my_pool.h	/^    int avail_count;\/\/这个机器的可用mysql连接数目$/;"	m	struct:__anon4
+avail_count	my_pool.h	/^    unsigned int avail_count;\/\/这个机器的可用mysql连接数目$/;"	m	struct:__anon4
 avail_head	my_pool.h	/^    struct list_head avail_head;\/\/成功建立连接，并且空闲可用的mysql连接$/;"	m	struct:__anon4	typeref:struct:__anon4::list_head
 belong_chunk	oplib/src/genpool.c	/^    chunk_t *belong_chunk;$/;"	m	struct:__anon17	file:
 buf	cli_pool.h	/^    buf_t buf;$/;"	m	struct:__anon8
@@ -453,6 +453,7 @@ connid	conn_pool.h	/^    uint32_t connid;$/;"	m	struct:__anon7
 container_of	oplib/include/list.h	221;"	d
 count	oplib/include/md5.h	/^	uint32_t count[2];$/;"	m	struct:_md5ctx
 ctx	my_pool.h	/^    my_ctx_t ctx;$/;"	m	struct:__anon2
+cur_connecting_cnt	my_pool.h	/^	unsigned int cur_connecting_cnt ;\/\/当前正在连接这个数据库的连接数，在自动增加连接的时候需要判断这里，保证一次增加一个，避免瞬间错误的建立大量连接$/;"	m	struct:__anon4
 curall_connection	my_pool.h	/^	int curall_connection ;\/\/当前的连接数，包括活的，死的$/;"	m	struct:__anon4
 curdb	conn_pool.h	/^    char curdb[64];$/;"	m	struct:__anon7
 curdb	my_pool.h	/^    char curdb[64];$/;"	m	struct:__anon1
@@ -498,6 +499,7 @@ func	oplib/src/timer.c	/^    timer_func_t func;$/;"	m	struct:timer_func_map	file
 func_map	oplib/src/timer.c	/^static struct timer_func_map func_map[MAX_FUNC_MAP];$/;"	v	typeref:struct:timer_func_map	file:
 func_map_index	oplib/src/timer.c	/^static int func_map_index;$/;"	v	file:
 g_conf	my_conf.c	/^struct conf_t g_conf;$/;"	v	typeref:struct:conf_t
+g_cursecond	main.c	/^int g_cursecond = 0 ;\/\/用来缓存time(null)的结果，避免大量调用time()$/;"	v
 g_log	main.c	/^log_t *g_log = NULL;$/;"	v
 g_logid	oplib/src/log.c	/^unsigned long g_logid = 0 ;$/;"	v
 g_usr1_reload	main.c	/^int g_usr1_reload = 0;$/;"	v
@@ -547,6 +549,7 @@ ipstr2int	oplib/src/common.c	/^int ipstr2int(uint32_t *ip, const char *ipstr)$/;
 lang	my_pool.h	/^    uint8_t lang;$/;"	m	struct:__anon3
 lang	my_protocol.h	/^    uint8_t lang;$/;"	m	struct:__anon9
 lasttime	oplib/src/timer.c	/^    time_t lasttime;$/;"	m	struct:timer_func_map	file:
+lastused_time	my_pool.h	/^    time_t lastused_time;\/\/这个连接的上次交互使用时间，是说被客户端使用哈$/;"	m	struct:__anon2
 len	my_protocol.h	/^    uint32_t len;$/;"	m	struct:__anon12
 level	oplib/include/log.h	/^    int level;$/;"	m	struct:_log_t
 link	cli_pool.h	/^    struct list_head link;$/;"	m	struct:__anon8	typeref:struct:__anon8::list_head
@@ -747,6 +750,7 @@ scram	my_protocol.h	/^    char scram[128];$/;"	m	struct:__anon10
 scram	my_protocol.h	/^    char scram[64];$/;"	m	struct:__anon9
 scram_len	my_protocol.h	/^    uint8_t scram_len;$/;"	m	struct:__anon9
 scramble	passwd.c	/^void scramble(char *to, const char *message, const char *password)$/;"	f
+setnamesql	my_pool.h	/^    char setnamesql[64];\/\/客户端发送过来的SET NAMES utf8 指令，为了避免多次发送，进行缓存$/;"	m	struct:__anon2
 setnonblock	oplib/src/sock.c	/^inline int setnonblock(int fd)$/;"	f
 sha_const_key	sha1.c	/^const uint32_t sha_const_key[5]=$/;"	v
 sha_result_codes	sha1.h	/^enum sha_result_codes$/;"	g

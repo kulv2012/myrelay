@@ -21,6 +21,9 @@ typedef struct{
     buf_t buf;
     my_ctx_t ctx;
     time_t state_time;
+    time_t lastused_time;//这个连接的上次交互使用时间，是说被客户端使用哈
+
+    char setnamesql[64];//客户端发送过来的SET NAMES utf8 指令，为了避免多次发送，进行缓存
 } my_conn_t;
 
 typedef struct{
@@ -53,6 +56,8 @@ typedef struct{
 	int curall_connection ;//当前的连接数，包括活的，死的
 	int min_connection ;//初始申请的连接数目
 	int max_connection ;//最大连接数
+
+	unsigned int cur_connecting_cnt ;//当前正在连接这个数据库的连接数，在自动增加连接的时候需要判断这里，保证一次增加一个，避免瞬间错误的建立大量连接
 } my_node_t;
 
 typedef struct{

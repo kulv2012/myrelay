@@ -242,7 +242,7 @@ int conn_close(conn_t *c)
         log(g_log, "conn release error\n");
     }
 
-    log(g_log, "conn:%u connection close\n", c->connid);
+    debug(g_log, "conn:%u connection close\n", c->connid);
 
     return res;
 }
@@ -276,7 +276,7 @@ int conn_close_with_my(conn_t *c)
         log(g_log, "conn release error\n");
     }
 
-    log(g_log, "conn:%u connection close\n", c->connid);
+    debug(g_log, "conn:%u connection close\n", c->connid);
 
     return res;
 }
@@ -330,7 +330,7 @@ int conn_state_set_reading_client(conn_t *c)
 
     list_move_tail(&(c->link), &read_client_head);
 
-    log(g_log, "conn:%d reading client\n", c->connid);
+    debug(g_log, "conn:%d reading client\n", c->connid);
 
     return 0;
 }
@@ -353,7 +353,7 @@ int conn_state_set_writing_mysql(conn_t *c)
 
     list_move_tail(&(c->link), &write_mysql_head);
 
-    log(g_log, "conn:%d writing mysql\n", c->connid);
+	debug(g_log, "conn:%d writing mysql\n", c->connid);
 
     return 0;
 }
@@ -376,7 +376,7 @@ int conn_state_set_read_mysql_write_client(conn_t *c)
 
     list_move_tail(&(c->link), &read_mysql_write_client_head);
 
-    log(g_log, "conn:%d read mysql write client\n", c->connid);
+    debug(g_log, "conn:%d read mysql write client\n", c->connid);
 
     return 0;
 }
@@ -399,7 +399,7 @@ int conn_state_set_prepare_mysql(conn_t *c)
 
     list_move_tail(&(c->link), &prepare_mysql_head);
 
-    log(g_log, "conn:%d prepare to write mysql\n", c->connid);
+    debug(g_log, "conn:%d prepare to write mysql\n", c->connid);
 
     return 0;
 }
@@ -422,7 +422,7 @@ int conn_state_set_idle(conn_t *c)
 
     list_move_tail(&(c->link), &idle_head);
 
-    log(g_log, "conn:%d connection idle\n", c->connid);
+    debug(g_log, "conn:%d connection idle\n", c->connid);
 
     return 0;
 }

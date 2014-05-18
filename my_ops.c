@@ -81,7 +81,6 @@ int my_hs_stage1_cb(int fd, void *arg)
     pass = node->pass;
     info = node->info;
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "read mysql error res[%d]\n", res);
@@ -92,23 +91,17 @@ int my_hs_stage1_cb(int fd, void *arg)
         if( (res = del_handler(fd)) < 0 ) {
             log(g_log, "del_handler fd[%d] error\n", fd);
             goto end;
-        } else {
-            debug(g_log, "del_handler fd[%d] success\n", fd);
         }
 
         res = add_handler(fd, EPOLLOUT, my_hs_stage2_cb, arg);
         if(res < 0){
             log(g_log, "add_handler fd[%d] error\n", fd);
             goto end;
-        } else {
-            debug(g_log, "add_handler fd[%d] success\n", fd);
         }
 
         if( (res = parse_init(buf, &init)) < 0 ){
             log(g_log, "parse init packet error\n");
             goto end;
-        } else {
-            debug(g_log, "parse init packet success\n");
         }
 
 		memcpy(message, init.scram, 8);
@@ -138,14 +131,14 @@ int my_hs_stage1_cb(int fd, void *arg)
         if( (res = make_login(buf, &login)) < 0 ){
             log(g_log, "make login packet error\n");
             goto end;
-        } else {
-            debug(g_log, "make login packet success\n");
         }
     }
 
     return res;
 
 end:
+
+	-- node->cur_connecting_cnt ;
     my_conn_close_on_fail(my);
 
     return res;
@@ -167,7 +160,6 @@ int my_hs_stage2_cb(int fd, void *arg)
     my = (my_conn_t *)arg;
     buf = &(my->buf);
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "my_real_write error[%d], errno:%d, errmsg:%s\n", res, errno, strerror(errno) );
@@ -178,15 +170,11 @@ int my_hs_stage2_cb(int fd, void *arg)
         if( (res = del_handler(fd)) < 0 ){
             log(g_log, "del_handler fd[%d] error\n", fd);
             goto end;
-        } else {
-            debug(g_log, "del_handler fd[%d] success\n", fd);
         }
 		//认证数据发送完成后，下一步进行结果验证，登陆结果
         if( (res = add_handler(fd, EPOLLIN, my_hs_stage3_cb, arg)) < 0 ){
             log(g_log, "add_handler fd[%d] error\n", fd);
             goto end;
-        } else {
-            debug(g_log, "add_handler fd[%d] success\n", fd);
         }
 
         buf_reset(buf);
@@ -195,6 +183,7 @@ int my_hs_stage2_cb(int fd, void *arg)
     return res;
 
 end:
+	-- ((my_node_t*)my->node)->cur_connecting_cnt ;
     my_conn_close_on_fail(my);
 
     return res;
@@ -217,7 +206,6 @@ int my_hs_stage3_cb(int fd, void *arg)
     my = (my_conn_t *)arg;
     buf = &(my->buf);
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "my_real_read[%d]\n", res);
@@ -228,15 +216,11 @@ int my_hs_stage3_cb(int fd, void *arg)
         if( (res = del_handler(fd)) < 0 ){
             log(g_log, "del_handler fd[%d]\n", fd);
             goto end;
-        } else {
-            debug(g_log, "del_handler fd[%d] success\n");
         }
 
         if( (res = parse_auth_result(buf, &result)) < 0 ){
             log(g_log, "parse_auth_result error\n");
             goto end;
-        } else {
-            debug(g_log, "parse_auth_result success\n");
         }
 
         buf_reset(buf);
@@ -248,11 +232,13 @@ int my_hs_stage3_cb(int fd, void *arg)
             log(g_log, "mysql authorized error, errmsg:[%s]\n", result.errmsg);
             goto end;
         }
+		-- ((my_node_t*)my->node)->cur_connecting_cnt ;//减少正在连接的连接数 
     }
 
     return res;
 
 end:
+	-- ((my_node_t*)my->node)->cur_connecting_cnt ;
     my_conn_close_on_fail(my);
 
     return res;
@@ -275,15 +261,12 @@ int cli_hs_stage1_prepare(conn_t *c)
     my_node_t *node;
     my_conn_t *my;
 
-    debug(g_log, "%s called\n", __func__);
 
     cli = c->cli;
 
     if( (res = conn_alloc_my_conn(c)) < 0 ){
         log(g_log, "conn:%u conn_alloc_my_conn error\n", c->connid);
         return -1;
-    } else {
-        debug(g_log, "conn:%u conn_alloc_my_conn success\n", c->connid);
     }
     my = c->my;
     node = my->node;
@@ -308,16 +291,12 @@ int cli_hs_stage1_prepare(conn_t *c)
     if( (res = make_init(buf, &init)) < 0 ){
         log(g_log, "conn:%u make_init error\n", c->connid);
         return res;
-    } else {
-        debug(g_log, "conn:%u make_init success\n", c->connid);
     }
 
     res = add_handler(cli->fd, EPOLLOUT, cli_hs_stage1_cb, cli);
     if(res < 0){
         log(g_log, "conn:%u add_handler fail\n", c->connid);
         return -1;
-    } else {
-        debug(g_log, "conn:%u add_handler success\n", c->connid);
     }
 
     return res;
@@ -337,7 +316,6 @@ int cli_hs_stage1_cb(int fd, void *arg)
     conn_t *c;
     buf_t *buf;
 
-    debug(g_log, "%s called\n", __func__);
 
     cli = (cli_conn_t *)arg;
     c = cli->conn;
@@ -393,7 +371,6 @@ int cli_hs_stage2_cb(int fd, void *arg)
     c = cli->conn;
     buf = &(cli->buf);
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_read error\n", c->connid);
@@ -409,22 +386,17 @@ int cli_hs_stage2_cb(int fd, void *arg)
         if( (res = parse_login(buf, &login)) < 0 ){
             log(g_log, "conn:%u parse login error\n", c->connid);
             goto end;
-        } else {
-            debug(g_log, "conn:%u parse login success\n", c->connid);
         }
 
         if(!strcmp(login.user, g_conf.user)){
             scramble(token, cli->scram, g_conf.passwd);
             if(memcmp(token, login.scram, 20) == 0){
-                log(g_log, "conn:%u login auth success\n", c->connid);
 
                 strncpy(c->curdb, login.db, sizeof(c->curdb) - 1);
                 result.pktno = 2;
                 if( (res = make_auth_result(buf, &result)) < 0 ){
                     log(g_log, "conn:%u make auth result error\n", c->connid);
                     goto end;
-                } else {
-                    debug(g_log, "conn:%u make auth result success\n", c->connid);
                 }
 
                 res = add_handler(fd, EPOLLOUT, cli_hs_stage3_cb, arg);
@@ -482,7 +454,6 @@ int cli_hs_stage3_cb(int fd, void *arg)
     buf = &(cli->buf);
     c = cli->conn;
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
@@ -534,7 +505,6 @@ static int cli_hs_auth_fail_cb(int fd, void *arg)
     buf = &(cli->buf);
     c = cli->conn;
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
@@ -568,7 +538,6 @@ int cli_query_cb(int fd, void *arg)
     my_conn_t *my;
     cli_com_t com;
 
-    debug(g_log, "%s called, fd:%d\n", __func__, fd);
 
     cli = (cli_conn_t *)arg;
     c = cli->conn;
@@ -581,7 +550,7 @@ int cli_query_cb(int fd, void *arg)
     } else if( (c->state == STATE_PREPARE_MYSQL) || (c->state == STATE_WRITING_MYSQL) ){
         log(g_log, "conn:%u client can be read when preparing or writing mysql\n", c->connid);
         goto end;
-    } else if(c->state == STATE_READ_MYSQL_WRITE_CLIENT) {
+    } else if(c->state == STATE_READ_MYSQL_WRITE_CLIENT) {//从mysql获取了结果，准备发送给client，所以记录sql数据 
         conn_state_set_reading_client(c);
         sqldump(c);
         gettimeofday(&(c->tv_start), NULL);
@@ -611,10 +580,8 @@ int cli_query_cb(int fd, void *arg)
         {
             // command ignored and quit
             case COM_QUIT:
-                log(g_log, "quit\n");
             case COM_SHUTDOWN:
-                log(g_log, "shutdown\n");
-                log(g_log, "conn:%u command ignored\n", c->connid);
+                debug(g_log, "command quit/shutdown\n");
                 res = cli_com_ignored(c);
                 goto end;//挂掉这个连接
 
@@ -624,13 +591,11 @@ int cli_query_cb(int fd, void *arg)
             case COM_PROCESS_KILL:
                 log(g_log, "kill\n");
             case COM_DEBUG:
-                log(g_log, "debug\n");
-                log(g_log, "conn:%u command ignored\n", c->connid);
                 res = cli_com_ignored(c);
                 break;
 
             case COM_INIT_DB:
-                log(g_log, "init db, ignore frist.\n");
+                debug(g_log, "init db, ignore frist.\n");
 				res = cli_com_ignored(c);//先忽略这个数据库初始化请求，待会query的时候再看数据库是否一样。这样能避免重复use db
                 strncpy(c->curdb, c->arg, sizeof(c->curdb) - 1);
 				/*
@@ -671,14 +636,12 @@ int cli_query_cb(int fd, void *arg)
                     log(g_log, "conn:%u alloc mysql conn error\n", c->connid);
                     goto end;
                 }*/
-
                 my = c->my;
+				//判断数据库是否相等
                 if(c->curdb != NULL && strcmp(my->ctx.curdb, c->curdb)){//还需要给服务器发送切换数据库的命令 
                     if( (res = my_use_db_prepare(c)) < 0 ){
                         log(g_log, "conn:%u my_use_db_prepare error\n", c->connid);
                         goto end;
-                    } else {
-                        debug(g_log, "conn:%u my_use_db_prepare success\n", c->connid);
                     }
 
                     conn_state_set_prepare_mysql(c);//标记为这个在等待切换数据库，完成后才能做后面的事情，
@@ -686,12 +649,19 @@ int cli_query_cb(int fd, void *arg)
 
                     break;
                 }
+				//如果这条指令是"SET NAMES utf8",判断当前连接使用的字符集是否相同，不相同就需要转发这条指令，否则ignore就行了
+				if( strncmp( c->arg, "SET NAMES ", 10) == 0 ){
+					if( strncmp( c->arg, my->setnamesql, 64 ) == 0 ){
+						res = cli_com_ignored(c);
+						break ;//属于SETNAMES
+					}
+					strncpy( my->setnamesql, c->arg, 64) ;
+				}
+
             default:
                 if( (res = cli_com_forward(c)) < 0 ){
                     log(g_log, "conn:%u cli_com_forward error\n", c->connid);
                     goto end;
-                } else {
-                    debug(g_log, "conn:%u cli_com_forward success\n", c->connid);
                 }
 
                 conn_state_set_writing_mysql(c);
@@ -725,7 +695,6 @@ int my_query_cb(int fd, void *arg)
     c = my->conn;
     buf = &(c->buf);
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
@@ -736,16 +705,12 @@ int my_query_cb(int fd, void *arg)
         if( (res = del_handler(fd)) < 0 ){
             log(g_log, "conn:%u del_handler error\n", c->connid);
             goto end;
-        } else {
-            debug(g_log, "conn:%u del_handler success\n", c->connid);
         }
 
         res = add_handler(fd, EPOLLIN, my_answer_cb, my);
         if(res < 0){
             log(g_log, "conn:%u add_handler error\n", c->connid);
             goto end;
-        } else {
-            debug(g_log, "conn:%u add_handler success\n", c->connid);
         }
 
         buf_reset(buf);
@@ -782,20 +747,15 @@ int my_answer_cb(int fd, void *arg)
     buf = &(c->buf);
     cli = c->cli;
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_read_result_set(fd, buf)) < 0 ){
         log_err(g_log, "conn:%u my_real_read_result_set error\n", c->connid);
         goto end;
-    } else {
-        debug(g_log, "conn:%u my_real_read success, res[%d]\n", c->connid, res);
     }
 
     if( (res = del_handler(fd)) < 0 ){
         log(g_log, "conn:%u del_handler error\n", c->connid);
         goto end;
-    } else {
-        debug(g_log, "conn:%u del_handler success\n", c->connid);
     }
 
     if( (res = del_handler(cli->fd)) < 0 ){
@@ -807,8 +767,6 @@ int my_answer_cb(int fd, void *arg)
     if(res < 0){
         log(g_log, "conn:%u add_handler error\n", c->connid);
         goto end;
-    } else {
-        debug(g_log, "conn:%u add_handler success\n", c->connid);
     }
 
     buf_rewind(buf);
@@ -841,7 +799,6 @@ int cli_answer_cb(int fd, void *arg)
     buf = &(c->buf);
     my = c->my;
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
@@ -852,24 +809,18 @@ int cli_answer_cb(int fd, void *arg)
         if( (res = del_handler(fd)) < 0 ){
             log(g_log, "conn:%u del_handler error\n", c->connid);
             goto end;
-        } else {
-            debug(g_log, "conn:%u del_handler success\n", c->connid);
         }
 
         res = add_handler(fd, EPOLLIN, cli_query_cb, cli);
         if(res < 0){
             log(g_log, "conn:%u add_handler error\n", c->connid);
             goto end;
-        } else {
-            debug(g_log, "conn:%u add_handler success\n", c->connid);
         }
 
         res = add_handler(my->fd, EPOLLIN, my_answer_cb, my);
         if(res < 0){
             log(g_log, "conn:%u add_handler error\n", c->connid);
             goto end;
-        } else {
-            debug(g_log, "conn:%u add_handler success\n", c->connid);
         }
 
         gettimeofday(&(c->tv_end), NULL);
@@ -1033,7 +984,6 @@ static int cli_com_ignored(conn_t *c)
     cli_conn_t *cli;
     char *ptr;
 
-    debug(g_log, "%s called\n", __func__);
 
     pktlen = 0;
     pktno = 1;
@@ -1057,8 +1007,6 @@ static int cli_com_ignored(conn_t *c)
     if(res < 0){
         log(g_log, "conn:%u add_handler error\n", c->connid);
         return res;
-    } else {
-        debug(g_log, "conn:%u add_handler success\n", c->connid);
     }
 
     return 0;
@@ -1084,7 +1032,6 @@ static int cli_com_ok_write_cb(int fd, void *arg)
     buf = &(c->buf);
     my = c->my;
 
-    debug(g_log, "%s called\n", __func__);
 
     if( (res = my_real_write(fd, buf, &done)) < 0 ){
         log_err(g_log, "conn:%u my_real_write error\n", c->connid);
@@ -1095,16 +1042,12 @@ static int cli_com_ok_write_cb(int fd, void *arg)
         if( (res = del_handler(fd)) < 0 ){
             log(g_log, "conn:%u del_handler error\n", c->connid);
             goto end;
-        } else {
-            debug(g_log, "conn:%u del_handler success\n", c->connid);
         }
 
         res = add_handler(fd, EPOLLIN, cli_query_cb, cli);
         if(res < 0){
             log(g_log, "conn:%u add_handler error\n", c->connid);
             goto end;
-        } else {
-            debug(g_log, "conn:%u add_handler success\n", c->connid);
         }
 
         buf_reset(buf);
@@ -1141,14 +1084,12 @@ static int cli_com_forward(conn_t *c)
     cli = c->cli;
     node = my->node;
 
-    log(g_log, "conn:%u mysql[%s:%s]\n", c->connid, node->host, node->srv);
+    log(g_log, "conn:%u mysql[%s:%s], sql:%s\n", c->connid, node->host, node->srv, c->arg );
 
     res = add_handler(fd, EPOLLOUT, my_query_cb, my);
     if(res < 0){
         log(g_log, "conn:%u add_handler error\n", c->connid);
         return res;
-    } else {
-        debug(g_log, "conn:%u add_handler success\n", c->connid);
     }
 
     buf_rewind(buf);
@@ -1196,8 +1137,6 @@ static int my_use_db_prepare(conn_t *c)
     res = add_handler(fd, EPOLLOUT, my_use_db_req_cb, my);
     if(res < 0){
         log(g_log, "conn:%u add_handler error\n", c->connid);
-    } else {
-        debug(g_log, "conn:%u add_handler success\n", c->connid);
     }
 
     buf_rewind(buf);

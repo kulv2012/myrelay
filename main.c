@@ -25,6 +25,7 @@
 
 int g_usr1_reload = 0;
 log_t *g_log = NULL;
+int g_cursecond = 0 ;//用来缓存time(null)的结果，避免大量调用time()
 
 extern struct conf_t g_conf;
 

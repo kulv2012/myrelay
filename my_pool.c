@@ -126,6 +126,8 @@ static int my_conn_init(my_conn_t *my, my_node_t *n)
     my_ctx_init(&(my->ctx));
 
     my->state_time = 0;
+    my->lastused_time = 0;
+	my->setnamesql[0] = '\0' ;
 
     return 0;
 }
@@ -241,7 +243,7 @@ int my_pool_init(int count)
         return -1;
     }
 
-    res = timer_register(my_conn_pool_status_timer, 30, "my_conn_pool_status_timer", 60);
+    res = timer_register(my_conn_pool_status_timer, 30, "my_conn_pool_status_timer", 10);
     if(res < 0){
         log(g_log, "my_conn_pool_status_timer register error\n");
         return -1;
@@ -280,22 +282,27 @@ static int make_my_conn(my_conn_t *my)
     int fd, done, res = 0;
     my_node_t *node;
 
+	info( g_log, "make_my_conn new a connection.\n");
     node = my->node;
 
     if( (res = my_conn_init(my, node)) < 0 ){
 		my_conn_release(my) ;//这里必须释放结构，因为没法重连
+		log_err(g_log, "my_conn_init failed , my_conn_release release\n") ;
         return res;
     }
 
+	++ node->cur_connecting_cnt ;
     fd = connect_nonblock(node->host, node->srv, &done);
     if(fd >= 0){
         my->fd = fd;
         res = add_handler(fd, EPOLLIN, my_hs_stage1_cb, my);//my为这个mysql的连接。暂时只记录了fd 和所属node
         if(res < 0){
             log(g_log, "add_handler error\n");
+			-- node->cur_connecting_cnt ;
             return my_conn_close_on_fail(my);
         }
     } else {
+		-- node->cur_connecting_cnt ;
         log_err(g_log, "connect_nonblock %s:%s error\n", node->host, node->srv);
         return my_conn_close_on_fail(my);
     }
@@ -530,7 +537,7 @@ int my_conn_close_on_fail(my_conn_t *my)
 static int my_conn_close_and_release(my_conn_t *my)
 {
     my_conn_close(my);
-    list_del_init(&(my->link));
+    list_del_init(&(my->link));//需要release，所以移除
     my_conn_release(my);
 
     return 0;
@@ -580,7 +587,7 @@ static int my_conn_set_used(my_conn_t *my, void *ptr)
     buf_reset(&(my->buf));
 
     list_move_tail(&(my->link), &(node->used_head));//将我这个连接从之前的地方移除，然后挂到used_head上面
-    my->state_time = time(NULL);
+    my->state_time = g_cursecond;
 
     if( (res = del_handler(my->fd)) < 0 ){//清楚，重新再来
         log(g_log, "del_handler error, ignore it\n");
@@ -610,6 +617,7 @@ int my_conn_set_avail(my_conn_t *my)
 
     list_move_tail(&(my->link), &(node->avail_head));
     my->state_time = time(NULL);
+	my->lastused_time = g_cursecond ;//更新一下这个值，用来标记这个连接空等了多久 
 
     node->avail_count++;
 
@@ -829,7 +837,7 @@ static int my_conn_pool_status_timer(unsigned long arg)
         }
 
         log(g_log, \
-            "slave %s:%s used,%d free,%d dead,%d raw,%d fail,%d ping,%d\n", \
+            "slave %s:%s used:%d free:%d dead:%d raw:%d fail:%d ping:%d\n", \
                    node->host, node->srv, count1, count2, count3, count4, count5, count6);
     }
 
@@ -849,7 +857,7 @@ static int my_conn_pool_ping_timer(unsigned long arg)
     my_node_t *node;
     my_conn_t *my;
     struct list_head *head, *pos, *n;
-
+	size_t now = time(NULL);
     for(i = 0; i < mypool->slave_num; i++){
         count = 0;
         node = &(mypool->slave[i]);
@@ -862,12 +870,18 @@ static int my_conn_pool_ping_timer(unsigned long arg)
                 break;
             }
             my = list_entry(pos, my_conn_t, link);
-            if( (res = my_conn_set_ping(my)) < 0 ){
-                log(g_log, "my_conn_set_ping error\n");
-            }
+			if( now - my->lastused_time < 30 || node->curall_connection <= node->min_connection ){
+				if( (res = my_conn_set_ping(my)) < 0 ){
+					log(g_log, "my_conn_set_ping error\n");
+				}
 
-            my_ping_prepare(my);
-        }
+				my_ping_prepare(my);
+			}else { 
+				//需要释放这个连接,因为他太久没有活动过了
+				my_conn_close_and_release( my) ;
+				info( g_log, "my_conn_pool_ping_timer connection idle for a long time, called my_conn_close_and_release\n") ;
+			}
+		}
     }
 
     return 0;
@@ -1067,7 +1081,11 @@ int my_try_increase_connection( )
         index = (now + i) % (mypool->slave_num);
 		//一个个slave找，注意这里是先找第一个mysql,再找第二个
         node = &(mypool->slave[index]);
-        if( (!my_node_is_closing(node)) && node->curall_connection < node->max_connection  ){
+		if( node->cur_connecting_cnt > 0 ){
+			info(g_log, "cur_connecting_cnt of %s:%s is not 0, ignore this time.\n", node->host, node->srv );
+			continue ;
+		}
+		else if( (!my_node_is_closing(node)) && node->curall_connection < node->max_connection  ){
 			if( (my = my_conn_alloc(node)) == NULL ){//申请一个mysql 连接结构，初始化
 				log(g_log, "my_conn_alloc error\n");
 				continue ;

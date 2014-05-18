@@ -18,6 +18,8 @@ int epoll_handler(int timeout);
 
 #define MAX_EVENT 100000
 
+#define fd_is_legal(fd)  (fd >= 0) && (fd < hccount)
+
 #ifdef __cplusplus
 }
 #endif
