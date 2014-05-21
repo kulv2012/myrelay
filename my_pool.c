@@ -252,7 +252,7 @@ int my_pool_init(int count)
         return -1;
     }
 
-    res = timer_register(my_conn_pool_ping_timer, 3, "my_conn_pool_ping_timer", 1);
+    res = timer_register(my_conn_pool_ping_timer, 10, "my_conn_pool_ping_timer", 10);
     if(res < 0){
         log(g_log, "my_conn_pool_ping_timer register error\n");
         return -1;
@@ -563,7 +563,7 @@ static int my_conn_close_and_release(my_conn_t *my)
  *
  */
 
-int my_conn_put(my_conn_t *my)
+int my_conn_put(my_conn_t *my, int isupdatestatustime )
 {
     int res = 0;
     my_node_t *node = my->node;
@@ -580,7 +580,7 @@ int my_conn_put(my_conn_t *my)
         return 0;
     }
 
-    my_conn_set_avail(my);
+    my_conn_set_avail(my, isupdatestatustime);
 
     return 0;
 }
@@ -620,7 +620,7 @@ static int my_conn_set_used(my_conn_t *my, void *ptr)
  *
  */
 
-int my_conn_set_avail(my_conn_t *my)
+int my_conn_set_avail(my_conn_t *my, int isupdatestatustime )
 {//跟mysql直接的验证成功了，下面标记这个连接为可用的,放入node的avail_head上面
     int res = 0;
     my_node_t *node = my->node;
@@ -630,7 +630,10 @@ int my_conn_set_avail(my_conn_t *my)
 
     list_move_tail(&(my->link), &(node->avail_head));
     my->state_time = time(NULL);
-	my->lastused_time = g_cursecond ;//更新一下这个值，用来标记这个连接空等了多久 
+
+	if( 1 == isupdatestatustime){
+		my->lastused_time = g_cursecond ;//更新一下这个值，用来标记这个连接空等了多久 
+	}
 
     node->avail_count++;
 
@@ -879,11 +882,11 @@ static int my_conn_pool_ping_timer(unsigned long arg)
         }
         head = &(node->avail_head);
         list_for_each_safe(pos, n, head){
-            if(count++ >= arg){
-                break;
-            }
             my = list_entry(pos, my_conn_t, link);
 			if( now - my->lastused_time < 30 || node->curall_connection <= node->min_connection ){
+				if(count++ >= arg){//一次最多允许ping这么多个连接
+					break;
+				}
 				if( (res = my_conn_set_ping(my)) < 0 ){
 					log(g_log, "my_conn_set_ping error\n");
 				}
@@ -1093,12 +1096,12 @@ int my_try_increase_connection( )
     for(i = 0; i < mypool->slave_num; i++){
         index = (now + i) % (mypool->slave_num);
 		//一个个slave找，注意这里是先找第一个mysql,再找第二个
-        node = &(mypool->slave[index]);
-		if( node->cur_connecting_cnt > 0 ){
+        node = &( mypool->slave[index] );
+		if( node->cur_connecting_cnt > 10 ){//本来就有时间戳进行随机，这里不判断这个了，轮到谁就谁来
 			info(g_log, "cur_connecting_cnt of %s:%s is not 0, ignore this time.\n", node->host, node->srv );
 			continue ;
-		}
-		else if( (!my_node_is_closing(node)) && node->curall_connection < node->max_connection  ){
+
+		} else if( (!my_node_is_closing(node)) && node->curall_connection < node->max_connection  ){
 			if( (my = my_conn_alloc(node)) == NULL ){//申请一个mysql 连接结构，初始化
 				log(g_log, "my_conn_alloc error\n");
 				continue ;

@@ -193,3 +193,16 @@ inline int accept_client(int sockfd, struct sockaddr_in *cliaddr, socklen_t *len
 
     return fd;
 }
+
+char* ip_to_string(uint32_t ip)
+{
+	static char result[32];
+
+	sprintf(result, "%d.%d.%d.%d",
+			(ip >> 24) & 0xFF,
+			(ip >> 16) & 0xFF,
+			(ip >>  8) & 0xFF,
+			(ip      ) & 0xFF);
+
+	return result;
+}

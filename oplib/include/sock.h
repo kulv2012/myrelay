@@ -16,6 +16,8 @@ inline int setnonblock(int fd);
 
 inline int accept_client(int sockfd, struct sockaddr_in *cliaddr, socklen_t *len);
 
+char* ip_to_string(uint32_t ip) ;
+
 #ifdef __cplusplus
 }
 #endif

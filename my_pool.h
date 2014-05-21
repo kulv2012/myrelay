@@ -76,11 +76,11 @@ int my_unreg(char *host, char *srv);
 
 my_conn_t *my_slave_conn_get(void *c, uint32_t ip, uint16_t port);
 
-int my_conn_put(my_conn_t *my);
+int my_conn_put(my_conn_t *my, int isupdatestatustime);
 int my_conn_close(my_conn_t *my);
 int my_conn_close_on_fail(my_conn_t *my);
 
-int my_conn_set_avail(my_conn_t *my);
+int my_conn_set_avail(my_conn_t *my, int isupdatestatustime);
 
 int my_conn_ctx_set_dirty(my_conn_t *my);
 int my_conn_ctx_is_dirty(my_conn_t *my);

@@ -227,7 +227,7 @@ int conn_close(conn_t *c)
     list_del_init(&(c->link));
 
     if(c->my){
-        if( (res = my_conn_put(c->my)) < 0 ){
+        if( (res = my_conn_put(c->my, 1)) < 0 ){
             log(g_log, "put my conn error\n");
         }
         c->my = NULL;

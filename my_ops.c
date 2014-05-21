@@ -227,7 +227,7 @@ int my_hs_stage3_cb(int fd, void *arg)
 
         if(result.result == 0){
             debug(g_log, "mysql authorized success\n");
-            res = my_conn_set_avail(my);//跟mysql直接的验证成功了，下面标记这个连接为可用的,放入node的avail_head上面
+            res = my_conn_set_avail(my, 1);//跟mysql直接的验证成功了，下面标记这个连接为可用的,放入node的avail_head上面
         } else {
             log(g_log, "mysql authorized error, errmsg:[%s]\n", result.errmsg);
             goto end;
@@ -563,7 +563,7 @@ int cli_query_cb(int fd, void *arg)
     }
 
     if( (res = my_real_read(fd, buf, &done)) < 0 ){
-        log_err(g_log, "conn:%u my_real_read error\n", c->connid);
+        log_err(g_log, "conn:%u my_real_read error with client[%s:%d] \n", c->connid, ip_to_string(cli->ip), cli->port);
         goto end;//客户端数据读取出错,关闭2端的连接?
     }
 
@@ -1345,7 +1345,7 @@ static int my_ping_resp_cb(int fd, void *arg)
 
         buf_reset(buf);
 
-        my_conn_put(my);
+        my_conn_put(my, 0 );//ping不更新mysql的使用时间，否则不好玩了，永远释放不了
     }
 
     return res;

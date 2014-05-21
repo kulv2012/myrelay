@@ -468,7 +468,7 @@ debug	oplib/include/log.h	39;"	d
 del_handler	oplib/src/handler.c	/^int del_handler(int fd)$/;"	f
 dict	oplib/include/dict.h	/^typedef struct dict{$/;"	s
 dict	oplib/src/conf.c	/^static dict_t *dict;$/;"	v	file:
-dict_clear	oplib/src/dict.c	/^int dict_clear(dict_t *ptr)$/;"	f
+dict_clear	oplib/src/dict.c	/^int dict_clear(dict_t *op)$/;"	f
 dict_init	oplib/src/dict.c	/^dict_t *dict_init(unsigned long size)$/;"	f
 dict_insert	oplib/src/dict.c	/^void *dict_insert(dict_t *op, void *var, void *value)$/;"	f
 dict_search	oplib/src/dict.c	/^void *dict_search(dict_t *op, void *var)$/;"	f
@@ -538,6 +538,7 @@ inited	oplib/src/conf.c	/^static int inited;$/;"	v	file:
 interval	oplib/src/timer.c	/^    int interval;$/;"	m	struct:timer_func_map	file:
 ip	cli_pool.h	/^    uint32_t ip;$/;"	m	struct:__anon8
 ip	my_conf.h	/^    char *ip;$/;"	m	struct:conf_t
+ip_to_string	oplib/src/sock.c	/^char* ip_to_string(uint32_t ip)$/;"	f
 ipaddr_bsearch	oplib/src/iprange.c	/^static int ipaddr_bsearch(ipblock *base, size_t nelem, uint32_t addr)$/;"	f	file:
 ipaddr_e	oplib/include/iprange.h	/^    uint32_t ipaddr_e;$/;"	m	struct:_ipblock
 ipaddr_in_range	oplib/src/iprange.c	/^int ipaddr_in_range(iprange_t *handler, uint32_t addr)$/;"	f
@@ -644,9 +645,9 @@ my_conn_init	my_pool.c	/^static int my_conn_init(my_conn_t *my, my_node_t *n)$/;
 my_conn_pool_ping_timeout_timer	my_pool.c	/^static int my_conn_pool_ping_timeout_timer(unsigned long arg)$/;"	f	file:
 my_conn_pool_ping_timer	my_pool.c	/^static int my_conn_pool_ping_timer(unsigned long arg)$/;"	f	file:
 my_conn_pool_status_timer	my_pool.c	/^static int my_conn_pool_status_timer(unsigned long arg)$/;"	f	file:
-my_conn_put	my_pool.c	/^int my_conn_put(my_conn_t *my)$/;"	f
+my_conn_put	my_pool.c	/^int my_conn_put(my_conn_t *my, int isupdatestatustime )$/;"	f
 my_conn_release	my_pool.c	/^static int my_conn_release(my_conn_t *my)$/;"	f	file:
-my_conn_set_avail	my_pool.c	/^int my_conn_set_avail(my_conn_t *my)$/;"	f
+my_conn_set_avail	my_pool.c	/^int my_conn_set_avail(my_conn_t *my, int isupdatestatustime )$/;"	f
 my_conn_set_dead	my_pool.c	/^static int my_conn_set_dead(my_conn_t *my)$/;"	f	file:
 my_conn_set_fail	my_pool.c	/^static int my_conn_set_fail(my_conn_t *my)$/;"	f	file:
 my_conn_set_ping	my_pool.c	/^static int my_conn_set_ping(my_conn_t *my)$/;"	f	file:
