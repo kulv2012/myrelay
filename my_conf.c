@@ -57,6 +57,11 @@ int my_conf_init(const char *log)
     return 0;
 }
 
+int my_conf_destroy()
+{
+	conf_destroy();
+	return 0;
+}
 #define MAX_LINE_LEN 1024
 
 /*

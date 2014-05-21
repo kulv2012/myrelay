@@ -130,10 +130,28 @@ void *dict_insert(dict_t *op, void *var, void *value)
  *
  */
 
-int dict_clear(dict_t *ptr)
+int dict_clear(dict_t *op)
 {
-    free(ptr->head_array);
-    free(ptr);
+	struct list_head *head, *pos, *n;
+	ditem_t *tmpitem = NULL ;
+	int i = 0 ; 
+	//一个个hash的清楚里面的list
+	for( i = 0 ; i < op->attr; ++i){
+		head = &(op->head_array[i]);
+		list_for_each_safe(pos, n, head){
+			tmpitem = list_entry(pos, ditem_t, link);
+			list_del(pos);//从list中移除，下面再free 
+			if( tmpitem->var ){
+				free( tmpitem->var ) ;
+			}
+			if( tmpitem->value ){
+				free( tmpitem->value) ;
+			}
+			free( tmpitem) ;
+		}
+	}
+    free(op->head_array);
+    free(op);
 
     return 0;
 }

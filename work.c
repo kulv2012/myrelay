@@ -27,6 +27,7 @@ extern log_t *g_log;
 extern struct conf_t g_conf;
 extern int g_usr1_reload;
 extern int g_cursecond ;
+extern int g_run ;
 
 static my_conf_t myconf_cur, myconf_new;
 
@@ -139,7 +140,7 @@ int work(int fd)
         debug(g_log, "add_handler listenfd[%d] success\n", fd);
     }
 
-    while(1){
+    while( g_run ){
         res = epoll_handler(1000);
 		g_cursecond = time(NULL);
         // timer
@@ -150,6 +151,10 @@ int work(int fd)
         }
     }
 
+	//释放内存块 
+	cli_pool_destroy();
+	conn_pool_destroy();
+	my_pool_destroy();
     return 0;
 }
 

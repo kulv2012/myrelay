@@ -39,7 +39,7 @@ CLIENT_SECURE_CONNECTION	mysql_com.h	144;"	d
 CLIENT_SSL	mysql_com.h	140;"	d
 CLIENT_SSL_VERIFY_SERVER_CERT	mysql_com.h	148;"	d
 CLIENT_TRANSACTIONS	mysql_com.h	142;"	d
-CLI_COM_IGNORE_OK_PKT_SIZE	my_ops.c	980;"	d	file:
+CLI_COM_IGNORE_OK_PKT_SIZE	my_ops.c	977;"	d	file:
 COM_BINLOG_DUMP	mysql_com.h	/^  COM_TIME, COM_DELAYED_INSERT, COM_CHANGE_USER, COM_BINLOG_DUMP,$/;"	e	enum:enum_server_command
 COM_CHANGE_USER	mysql_com.h	/^  COM_TIME, COM_DELAYED_INSERT, COM_CHANGE_USER, COM_BINLOG_DUMP,$/;"	e	enum:enum_server_command
 COM_CONNECT	mysql_com.h	/^  COM_PROCESS_INFO, COM_CONNECT, COM_PROCESS_KILL, COM_DEBUG, COM_PING,$/;"	e	enum:enum_server_command
@@ -155,7 +155,7 @@ MAX_HASH_BUCKET	oplib/src/conf.c	21;"	d	file:
 MAX_HOST_LEN	def.h	6;"	d
 MAX_INT_WIDTH	mysql_com.h	241;"	d
 MAX_KEY_LEN	oplib/src/conf.c	22;"	d	file:
-MAX_LINE_LEN	my_conf.c	60;"	d	file:
+MAX_LINE_LEN	my_conf.c	65;"	d	file:
 MAX_LINE_LEN	oplib/src/conf.c	20;"	d	file:
 MAX_MASTER_NODE	def.h	11;"	d
 MAX_MEDIUMINT_WIDTH	mysql_com.h	240;"	d
@@ -308,7 +308,7 @@ TIMESTAMP_FLAG	mysql_com.h	94;"	d
 UNIQUE_FLAG	mysql_com.h	101;"	d
 UNIQUE_KEY_FLAG	mysql_com.h	84;"	d
 UNSIGNED_FLAG	mysql_com.h	87;"	d
-USAGE	main.c	35;"	d	file:
+USAGE	main.c	37;"	d	file:
 USERNAME_CHAR_LENGTH	mysql_com.h	26;"	d
 USERNAME_LENGTH	mysql_com.h	28;"	d
 USER_HOST_BUFF_SIZE	mysql_com.h	39;"	d
@@ -343,6 +343,7 @@ __list_for_each	oplib/include/list.h	256;"	d
 __list_splice	oplib/include/list.h	/^static inline void __list_splice(struct list_head *list,$/;"	f
 _alloc_a_chunk	oplib/src/genpool.c	/^static int _alloc_a_chunk(genpool_handler_t *g)$/;"	f	file:
 _conn_state_timeout_timer	conn_pool.c	/^_conn_state_timeout_timer(unsigned long arg, \\$/;"	f	file:
+_free_a_chunk	oplib/src/genpool.c	/^void _free_a_chunk( genpool_handler_t *gpool, struct list_head *head){$/;"	f
 _genpool_handler_t	oplib/include/genpool.h	/^typedef struct _genpool_handler_t{$/;"	s
 _ipblock	oplib/include/iprange.h	/^typedef struct _ipblock{$/;"	s
 _iprange_t	oplib/include/iprange.h	/^typedef struct _iprange_t{$/;"	s
@@ -401,6 +402,7 @@ cli_hs_stage1_prepare	my_ops.c	/^int cli_hs_stage1_prepare(conn_t *c)$/;"	f
 cli_hs_stage2_cb	my_ops.c	/^int cli_hs_stage2_cb(int fd, void *arg)$/;"	f
 cli_hs_stage3_cb	my_ops.c	/^int cli_hs_stage3_cb(int fd, void *arg)$/;"	f
 cli_pool	cli_pool.c	/^static genpool_handler_t *cli_pool;$/;"	v	file:
+cli_pool_destroy	cli_pool.c	/^int cli_pool_destroy( )$/;"	f
 cli_pool_init	cli_pool.c	/^int cli_pool_init(int count)$/;"	f
 cli_query_cb	my_ops.c	/^int cli_query_cb(int fd, void *arg)$/;"	f
 client_flags	my_protocol.h	/^    uint32_t client_flags;$/;"	m	struct:__anon10
@@ -427,6 +429,7 @@ conf_def_sqllog	my_conf.h	25;"	d
 conf_def_user	my_conf.h	18;"	d
 conf_def_worker	my_conf.h	5;"	d
 conf_def_write_mysql_timeout	my_conf.h	12;"	d
+conf_destroy	oplib/src/conf.c	/^void conf_destroy(){$/;"	f
 conf_get	oplib/src/conf.c	/^static char *conf_get(const char *var)$/;"	f	file:
 conf_init	oplib/src/conf.c	/^int conf_init(const char *conf)$/;"	f
 conf_t	my_conf.h	/^struct conf_t{$/;"	s
@@ -439,6 +442,7 @@ conn_close_with_my	conn_pool.c	/^int conn_close_with_my(conn_t *c)$/;"	f
 conn_init	conn_pool.c	/^static int conn_init(conn_t *c)$/;"	f	file:
 conn_open	conn_pool.c	/^conn_t *conn_open(int fd, uint32_t ip, uint16_t port)$/;"	f
 conn_pool	conn_pool.c	/^static genpool_handler_t *conn_pool;$/;"	v	file:
+conn_pool_destroy	conn_pool.c	/^int conn_pool_destroy( )$/;"	f
 conn_pool_init	conn_pool.c	/^int conn_pool_init(size_t count)$/;"	f
 conn_release	conn_pool.c	/^static int conn_release(conn_t *c)$/;"	f	file:
 conn_state_set_idle	conn_pool.c	/^int conn_state_set_idle(conn_t *c)$/;"	f
@@ -488,7 +492,7 @@ fd	cli_pool.h	/^    int fd;$/;"	m	struct:__anon8
 fd	my_pool.h	/^    int fd;\/\/mysql连接对应的tcp socket fd$/;"	m	struct:__anon2
 fd	oplib/include/log.h	/^    int fd;$/;"	m	struct:_log_t
 fd	oplib/src/handler.c	/^    int fd;$/;"	m	struct:__anon18	file:
-fd_is_legal	oplib/src/handler.c	/^static int fd_is_legal(int fd)$/;"	f	file:
+fd_is_legal	oplib/include/handler.h	21;"	d
 field_count	my_protocol.h	/^    uint8_t field_count;$/;"	m	struct:__anon13
 fname	oplib/include/log.h	/^    char *fname;$/;"	m	struct:_log_t
 free_chunks	oplib/include/genpool.h	/^    uint32_t free_chunks ;$/;"	m	struct:_genpool_handler_t
@@ -502,8 +506,10 @@ g_conf	my_conf.c	/^struct conf_t g_conf;$/;"	v	typeref:struct:conf_t
 g_cursecond	main.c	/^int g_cursecond = 0 ;\/\/用来缓存time(null)的结果，避免大量调用time()$/;"	v
 g_log	main.c	/^log_t *g_log = NULL;$/;"	v
 g_logid	oplib/src/log.c	/^unsigned long g_logid = 0 ;$/;"	v
+g_run	main.c	/^int g_run ;$/;"	v
 g_usr1_reload	main.c	/^int g_usr1_reload = 0;$/;"	v
 genpool_alloc_page	oplib/src/genpool.c	/^inline void *genpool_alloc_page(genpool_handler_t *g)$/;"	f
+genpool_destroy	oplib/src/genpool.c	/^void genpool_destroy( genpool_handler_t *gpool){$/;"	f
 genpool_handler_t	oplib/include/genpool.h	/^} genpool_handler_t;$/;"	t	typeref:struct:_genpool_handler_t
 genpool_init	oplib/src/genpool.c	/^genpool_handler_t *genpool_init(size_t size, size_t max)$/;"	f
 genpool_release_page	oplib/src/genpool.c	/^inline int genpool_release_page(genpool_handler_t *g, void *mem)$/;"	f
@@ -512,6 +518,7 @@ get_conf_int	oplib/src/conf.c	/^int get_conf_int(const char *str, int def)$/;"	f
 get_conf_str	oplib/src/conf.c	/^char *get_conf_str(const char *str, const char *def)$/;"	f
 getkey	oplib/src/dict.c	/^static unsigned long getkey(dict_t *op, void *var)$/;"	f	file:
 getsum	oplib/src/dict.c	/^static unsigned long getsum(void *var)$/;"	f	file:
+handle_sigint	main.c	/^void handle_sigint(int signal) {$/;"	f
 handler	my_pool.c	/^static genpool_handler_t *handler;\/\/mysql 的连接池，在my_pool_init分配$/;"	v	file:
 handler_callback_t	oplib/src/handler.c	/^} handler_callback_t;$/;"	t	typeref:struct:__anon18	file:
 hccount	oplib/src/handler.c	/^static int hccount = 0;$/;"	v	file:
@@ -603,7 +610,7 @@ max_connection	my_pool.h	/^	int max_connection ;\/\/最大连接数$/;"	m	struct
 max_connections	my_conf.h	/^    int max_connections;$/;"	m	struct:conf_t
 max_free_chunks	oplib/include/genpool.h	/^	uint32_t max_free_chunks;$/;"	m	struct:_genpool_handler_t
 max_pkt_size	my_protocol.h	/^    uint32_t max_pkt_size;$/;"	m	struct:__anon10
-max_total_chunks	oplib/include/genpool.h	/^	uint32_t max_total_chunks;$/;"	m	struct:_genpool_handler_t
+max_total_chunks	oplib/include/genpool.h	/^	uint32_t max_total_chunks; \/\/一共需要多少个块$/;"	m	struct:_genpool_handler_t
 maxnum	my_conf.h	/^    int  maxnum;\/\/连接的最大数目$/;"	m	struct:__anon19
 md5_decode	oplib/src/md5.c	/^static void md5_decode (uint32_t *output,const uint8_t *input,uint32_t len) {$/;"	f	file:
 md5_encode	oplib/src/md5.c	/^static void md5_encode (uint8_t *output,const uint32_t *input,uint32_t len) {$/;"	f	file:
@@ -622,6 +629,7 @@ my	conn_pool.h	/^    my_conn_t *my;\/\/对应的mysql连接是哪个 $/;"	m	stru
 my_answer_cb	my_ops.c	/^int my_answer_cb(int fd, void *arg)$/;"	f
 my_auth_init_t	my_protocol.h	/^}my_auth_init_t;$/;"	t	typeref:struct:__anon9
 my_auth_result_t	my_protocol.h	/^}my_auth_result_t;$/;"	t	typeref:struct:__anon11
+my_conf_destroy	my_conf.c	/^int my_conf_destroy()$/;"	f
 my_conf_init	my_conf.c	/^int my_conf_init(const char *log)$/;"	f
 my_conf_t	my_conf.h	/^}my_conf_t;$/;"	t	typeref:struct:__anon20
 my_conn_alloc	my_pool.c	/^static my_conn_t *my_conn_alloc(my_node_t *n)$/;"	f	file:
@@ -663,6 +671,7 @@ my_node_t	my_pool.h	/^} my_node_t;$/;"	t	typeref:struct:__anon4
 my_ping_prepare	my_ops.c	/^int my_ping_prepare(my_conn_t *my)$/;"	f
 my_ping_req_cb	my_ops.c	/^static int my_ping_req_cb(int fd, void *arg)$/;"	f	file:
 my_ping_resp_cb	my_ops.c	/^static int my_ping_resp_cb(int fd, void *arg)$/;"	f	file:
+my_pool_destroy	my_pool.c	/^int my_pool_destroy( )$/;"	f
 my_pool_have_conn	my_pool.c	/^int my_pool_have_conn(void)$/;"	f
 my_pool_init	my_pool.c	/^int my_pool_init(int count)$/;"	f
 my_pool_t	my_pool.h	/^} my_pool_t;$/;"	t	typeref:struct:__anon5
@@ -700,7 +709,7 @@ packet_error	mysql_com.h	246;"	d
 padding	oplib/src/md5.c	/^static const uint8_t padding[64] = {$/;"	v	file:
 page_size	oplib/include/genpool.h	/^    uint32_t page_size; \/\/一个元素的大小 $/;"	m	struct:_genpool_handler_t
 page_t	oplib/src/genpool.c	/^} page_t;$/;"	t	typeref:struct:__anon17	file:
-pages_per_chunk	oplib/include/genpool.h	/^	uint32_t pages_per_chunk;$/;"	m	struct:_genpool_handler_t
+pages_per_chunk	oplib/include/genpool.h	/^	uint32_t pages_per_chunk;\/\/预定义的每个块包含多少个pages， 默认为64个pages$/;"	m	struct:_genpool_handler_t
 parse_auth_result	my_protocol.c	/^int parse_auth_result(buf_t *buf, my_auth_result_t *result)$/;"	f
 parse_com	my_protocol.c	/^int parse_com(buf_t *buf, cli_com_t *com)$/;"	f
 parse_init	my_protocol.c	/^int parse_init(buf_t *buf, my_auth_init_t *init)$/;"	f

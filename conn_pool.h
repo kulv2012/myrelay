@@ -46,4 +46,6 @@ int conn_state_set_idle(conn_t *c);
 int conn_state_set_auth_fail(conn_t *c);
 int conn_state_set_auth_success(conn_t *c);
 
+int conn_pool_destroy( ) ;
+
 #endif

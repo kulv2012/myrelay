@@ -104,7 +104,7 @@ static int _alloc_a_chunk(genpool_handler_t *g)
  *ret: success=0, error=-1
  */
 static int _release_a_chunk(genpool_handler_t *g, chunk_t *c)
-{
+{//将一个chunk放到空闲的free_chunks_head里面，并适当控制总空闲数目
     chunk_t *tmp;
 
     list_del_init(&(c->link));
@@ -113,6 +113,7 @@ static int _release_a_chunk(genpool_handler_t *g, chunk_t *c)
 
     //genpool_status(g);
 
+	//顺便看看是不是有多余的chunks，如果有就释放一个空闲的
     while(g->free_chunks > g->max_free_chunks){
         tmp = list_first_entry(&(g->free_chunks_head), chunk_t, link);
         list_del_init(&(tmp->link));
@@ -149,7 +150,7 @@ genpool_handler_t *genpool_init(size_t size, size_t max)
     g->max_free_chunks = MAX_FREE_CHUNKS;
     g->prealloc_chunks = PREALLOC_CHUNKS;
     g->page_size = size;//一个元素的大小
-    g->pages_per_chunk = PAGES_PER_CHUNK;
+    g->pages_per_chunk = PAGES_PER_CHUNK; //每个块包含多少个pages
     g->total_chunks = 0;
     g->max_total_chunks = max / g->pages_per_chunk + 1;
 
@@ -173,6 +174,37 @@ genpool_handler_t *genpool_init(size_t size, size_t max)
 
     return g;
 }
+void genpool_destroy( genpool_handler_t *gpool){
+	if( gpool == NULL ) {
+		return ;
+	}
+	_free_a_chunk( gpool, &(gpool->used_chunks_head)) ;
+
+	_free_a_chunk( gpool, &(gpool->free_chunks_head)) ;
+
+	_free_a_chunk( gpool, &(gpool->full_chunks_head)) ;
+    gpool->free_chunks = 0;
+
+	free(gpool) ;
+}
+
+void _free_a_chunk( genpool_handler_t *gpool, struct list_head *head){
+	struct list_head *pos, *n;
+	chunk_t * tmpchunk = NULL ;
+
+	list_for_each_safe(pos, n, head){
+		tmpchunk = list_entry(pos, chunk_t, link);
+		list_del_init(pos);
+		if( tmpchunk->chunk_addr != NULL){
+			//先free chunk 数据部分，再释放元数据部分
+			free( tmpchunk->chunk_addr ) ;
+		}
+		free( tmpchunk) ;
+        gpool->total_chunks--;
+	}
+	return ;
+}
+
 
 /*
  *fun: alloc page really
@@ -188,7 +220,7 @@ inline void *genpool_alloc_page(genpool_handler_t *g)
 
     if(g->free_chunks == 0){
         for(i = 0; i < g->prealloc_chunks; i++){
-            ret = _alloc_a_chunk(g);
+            ret = _alloc_a_chunk(g);//如果没有空闲chunks了，不管如何，都尝试分配prealloc_chunks这么多
             if(ret < 0){
                 if(ret == -1){
                     log(g_log, "reach max_total_chunk[%d]\n", g->max_free_chunks);
@@ -275,8 +307,7 @@ int genpool_status(genpool_handler_t *g, char *buf, size_t len)
 {
     int n;
 
-    n = snprintf(buf, len, "free_chunks[%u] total_chunks[%u]", \
-                                        g->free_chunks, g->total_chunks);
+    n = snprintf(buf, len, "free_chunks[%u] total_chunks[%u]", g->free_chunks, g->total_chunks);
 
     return n;
 }

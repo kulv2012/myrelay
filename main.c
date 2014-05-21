@@ -29,6 +29,8 @@ int g_cursecond = 0 ;//用来缓存time(null)的结果，避免大量调用time(
 
 extern struct conf_t g_conf;
 
+int g_run ;
+
 static int signal_init(void);
 static void signal_usr1(int signal);
 
@@ -45,6 +47,7 @@ int main(int argc, char *argv[])
     int i, listenfd;
     pid_t pid;
 
+	g_run = 1 ;
     // argument parse
     if(argc != 2){
         USAGE();
@@ -85,7 +88,10 @@ int main(int argc, char *argv[])
     if(g_conf.daemon){
         daemon(1, 1);
     }
-work(listenfd);
+
+	work(listenfd);
+
+	my_conf_destroy() ;
 
 return 0 ;//暂时不用下面的功能
     // fork children
@@ -124,6 +130,9 @@ return 0 ;//暂时不用下面的功能
     return 0;
 }
 
+void handle_sigint(int signal) {
+	g_run = 0 ;
+}
 /*
  * fun: init signal handler
  * arg: 
@@ -139,7 +148,9 @@ static int signal_init(void)
     signal(SIGILL, SIG_IGN);
     signal(SIGTRAP, SIG_IGN);
     signal(SIGABRT, SIG_IGN);
-    signal(SIGKILL, SIG_IGN);
+    //signal(SIGKILL, handle_sigint);
+	signal(SIGINT, handle_sigint);
+	signal(SIGTERM, handle_sigint);
     signal(SIGUSR1, signal_usr1);
     signal(SIGUSR2, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);

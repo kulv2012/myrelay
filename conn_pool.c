@@ -546,3 +546,13 @@ static int idle_timeout_timer(unsigned long arg)
 
     return 0;
 }
+
+int conn_pool_destroy( )
+{
+	if( conn_pool != NULL){
+		genpool_destroy( conn_pool) ;
+		conn_pool = NULL ;
+	}
+
+    return 0;
+}

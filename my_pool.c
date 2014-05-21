@@ -222,6 +222,9 @@ int my_pool_init(int count)
         log_err(g_log, "malloc error\n");
         return -1;
     }
+	for( i = 0 ; i < MAX_SLAVE_NODE; ++i ){// 初始化数据结构
+		my_node_init( &( mypool->slave[i]) ) ;
+	}
 
     if( (handler = genpool_init(sizeof(my_conn_t), count)) == NULL ){
         log(g_log, "genpool_init error\n");
@@ -266,6 +269,16 @@ int my_pool_init(int count)
         log(g_log, "my_node_closing_cleanup_timer register error\n");
         return -1;
     }
+
+    return 0;
+}
+
+int my_pool_destroy( )
+{
+	if( handler != NULL){
+		genpool_destroy( handler ) ;
+		handler = NULL ;
+	}
 
     return 0;
 }

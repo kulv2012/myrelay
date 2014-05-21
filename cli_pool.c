@@ -40,6 +40,16 @@ int cli_pool_init(int count)
     return 0;
 }
 
+int cli_pool_destroy( )
+{
+	if( cli_pool != NULL){
+		genpool_destroy( cli_pool) ;
+		cli_pool = NULL ;
+	}
+
+    return 0;
+}
+
 /*
  * fun: alloc client connection
  * arg: connection pointer, connection fd, ip and port

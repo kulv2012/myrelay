@@ -76,7 +76,7 @@ int conf_init(const char *conf)
                 log(g_log, "line %d, parse error, \"%s\"\n", line, buf);
                 return -1;
             } else {
-                debug(g_log, "%s: %s\n", key, value);
+                debug(g_log, "read conf : %s: %s\n", key, value);
                 k = strdup(key);
                 v = strdup(value);
                 ptr = dict_insert(dict, k, v);
@@ -193,4 +193,11 @@ char *get_conf_str(const char *str, const char *def)
     }
 
     return ptr;
+}
+
+void conf_destroy(){
+	if( dict != NULL){
+		dict_clear( dict) ;
+		dict = NULL ;
+	}
 }

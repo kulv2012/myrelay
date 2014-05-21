@@ -61,6 +61,7 @@ struct conf_t{
 };
 
 int my_conf_init(const char *log);
+int my_conf_destroy( );
 int mysql_conf_parse(const char *conf, my_conf_t *myconf);
 
 #endif
