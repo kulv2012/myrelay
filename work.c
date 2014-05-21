@@ -151,6 +151,7 @@ int work(int fd)
         }
     }
 
+	log_err(g_log, "normal exiting.");
 	//释放内存块 
 	cli_pool_destroy();
 	conn_pool_destroy();

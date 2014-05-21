@@ -131,6 +131,7 @@ return 0 ;//暂时不用下面的功能
 }
 
 void handle_sigint(int signal) {
+	log_err(g_log, "handle_sigint called, exiting") ;
 	g_run = 0 ;
 }
 /*
