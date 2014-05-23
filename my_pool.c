@@ -628,7 +628,9 @@ int my_conn_set_avail(my_conn_t *my, int isupdatestatustime )
     my->conn = NULL;
     buf_reset(&(my->buf));
 
-    list_move_tail(&(my->link), &(node->avail_head));
+	//下面不放到尾部了，否则一个个轮的话，没法删除过期连接了就 
+    //list_move_tail(&(my->link), &(node->avail_head));
+    list_move(&(my->link), &(node->avail_head));
     my->state_time = time(NULL);
 
 	if( 1 == isupdatestatustime){
@@ -1097,8 +1099,9 @@ int my_try_increase_connection( )
         index = (now + i) % (mypool->slave_num);
 		//一个个slave找，注意这里是先找第一个mysql,再找第二个
         node = &( mypool->slave[index] );
-		if( node->cur_connecting_cnt > 10 ){//本来就有时间戳进行随机，这里不判断这个了，轮到谁就谁来
-			info(g_log, "cur_connecting_cnt of %s:%s is not 0, ignore this time.\n", node->host, node->srv );
+		int maxinflightconn = 10 ;
+		if( node->cur_connecting_cnt > maxinflightconn ){//本来就有时间戳进行随机，这里不判断这个了，轮到谁就谁来
+			info(g_log, "cur_connecting_cnt of %s:%s is not %d, ignore this time.\n", node->host, node->srv, maxinflightconn );
 			continue ;
 
 		} else if( (!my_node_is_closing(node)) && node->curall_connection < node->max_connection  ){
