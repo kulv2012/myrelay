@@ -630,11 +630,14 @@ int my_conn_set_avail(my_conn_t *my, int isupdatestatustime )
 
 	//下面不放到尾部了，否则一个个轮的话，没法删除过期连接了就 
     //list_move_tail(&(my->link), &(node->avail_head));
-    list_move(&(my->link), &(node->avail_head));
     my->state_time = time(NULL);
 
 	if( 1 == isupdatestatustime){
 		my->lastused_time = g_cursecond ;//更新一下这个值，用来标记这个连接空等了多久 
+		list_move_tail(&(my->link), &(node->avail_head));//放到末尾，以为你这个是ping等操作,避免无法删除闲置连接
+	}
+	else {
+		list_move(&(my->link), &(node->avail_head));
 	}
 
     node->avail_count++;

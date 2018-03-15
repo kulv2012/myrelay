@@ -1345,7 +1345,7 @@ static int my_ping_resp_cb(int fd, void *arg)
 
         buf_reset(buf);
 
-        my_conn_put(my, 0 );//ping不更新mysql的使用时间，否则不好玩了，永远释放不了
+        my_conn_put(my, 0 );//ping不更新mysql的使用时间，否则不好玩了，永远释放不了, 还有ping的连接，放到队列末尾
     }
 
     return res;
